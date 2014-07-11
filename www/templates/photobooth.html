@@ -1,0 +1,33 @@
+<ion-view title="Photo Booth">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+
+  <ion-content class="has-header" padding="true">
+		<button ng-click="makeIt()" class="button button-block button-primary">Make a Face (make it)</button>
+    <!-- <button ng-click="testIt()" class="button button-block button-primary">Test it</button> -->
+
+    <div class="row" ng-repeat="pair in pairs | orderBy: '-createdAt' ">
+      <div class="col">
+        <img ng-click="playOrPass($index)" ng-src="{{pair.photo1}}" style="width: 100%">
+        <br>
+        <!-- <p class="calm">nelly</p> -->
+        <!-- <button class="button button-clear button-calm"> nelly </button> -->
+        <!-- <a class="item calm" href="#">nelly</a> -->
+      </div>
+      <div class="col col-10 col-center" style="text-align: center;">
+        <!-- <h4>105</h4>
+        <i class="icon ion-thumbsup"></i> -->
+        <!-- ion-arrow-up-b   ion-thumbsup  ion-arrow-up-a -->
+        <!-- <button class="button icon ion-arrow-up-a"></button> -->
+      </div>
+      <div class="col col-center">
+        <!-- <img ng-src="{{pair.photo2}}" style="width: 100%"> -->
+        <!-- <br> -->
+        <button ng-click="passIt()" class="button button-clear button-positive icon-right ion-chevron-right">Pass it </button>
+      </div>
+    </div>
+
+  </ion-content>
+
+</ion-view>

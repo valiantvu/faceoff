@@ -1,0 +1,27 @@
+<ion-view title="Photo">
+  <ion-nav-bar>
+    <ion-nav-buttons side="right">
+      <button class="button button-clear" ng-click="cancel()">Cancel</button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+  <ion-content class="has-header" padding="true">
+
+    <div class="row">
+      <div class="col col-20">
+      </div>
+      <div class="col col-60 col-center" style="text-align: center;">
+        <img ng-src="{{rootPhoto}}" style="width: 100%">
+        <br>
+        <button ng-click="playIt()" class="button button-block button-positive" type="submit">Play it </button>
+        <br>
+        <button ng-click="passIt()" class="button button-block button-positive" type="submit">Pass it </button>
+      </div>
+      <div class="col col-20">
+      </div>
+    </div>
+
+  </ion-content>
+
+</ion-view>
+
