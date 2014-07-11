@@ -1,6 +1,6 @@
 'use strict';
 
-var User = require('./user.model');
+var Thread = require('./thread.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
@@ -10,66 +10,66 @@ var validationError = function(res, err) {
 };
 
 /**
- * Get list of users
+ * Get list of threads
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-  User.find({}, function (err, users) {
+  Thread.find({}, function (err, threads) {
     if(err) return res.send(500, err);
-    res.json(200, users);
+    res.json(200, threads);
   });
 };
 
 /**
- * Creates a new user
+ * Creates a new thread
  */
 exports.create = function (req, res, next) {
-  var newUser = new User(req.body);
-  // newUser.provider = 'local';
-  newUser.save(function(err, user) {
+  var newThread = new Thread(req.body);
+  // newThread.provider = 'local';
+  newThread.save(function(err, thread) {
     if (err) return validationError(res, err);
-    // var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
+    // var token = jwt.sign({_id: thread._id }, config.secrets.session, { expiresInMinutes: 60*5 });
     // res.json({ token: token });
-    res.json({ data: user });
+    res.json({ data: thread });
   });
 };
 
 /**
- * Get a single user
+ * Get a single thread
  */
 exports.show = function (req, res, next) {
-  var userId = req.params.id;
+  var threadId = req.params.id;
 
-  User.findById(userId, function (err, user) {
+  Thread.findById(threadId, function (err, thread) {
     if (err) return next(err);
-    if (!user) return res.send(401);
-    res.json(user.profile);
+    if (!thread) return res.send(401);
+    res.json(thread.profile);
   });
 };
 
 /**
- * Deletes a user
+ * Deletes a thread
  * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
-  User.findByIdAndRemove(req.params.id, function(err, user) {
+  Thread.findByIdAndRemove(req.params.id, function(err, thread) {
     if(err) return res.send(500, err);
     return res.send(204);
   });
 };
 
 /**
- * Change a users password
+ * Change a threads password
  */
 exports.changePassword = function(req, res, next) {
-  var userId = req.user._id;
+  var threadId = req.thread._id;
   var oldPass = String(req.body.oldPassword);
   var newPass = String(req.body.newPassword);
 
-  User.findById(userId, function (err, user) {
-    if(user.authenticate(oldPass)) {
-      user.password = newPass;
-      user.save(function(err) {
+  Thread.findById(threadId, function (err, thread) {
+    if(thread.authenticate(oldPass)) {
+      thread.password = newPass;
+      thread.save(function(err) {
         if (err) return validationError(res, err);
         res.send(200);
       });
@@ -83,13 +83,13 @@ exports.changePassword = function(req, res, next) {
  * Get my info
  */
 exports.me = function(req, res, next) {
-  var userId = req.user._id;
-  User.findOne({
-    _id: userId
-  }, '-salt -hashedPassword', function(err, user) { // don't ever give out the password or salt
+  var threadId = req.thread._id;
+  Thread.findOne({
+    _id: threadId
+  }, '-salt -hashedPassword', function(err, thread) { // don't ever give out the password or salt
     if (err) return next(err);
-    if (!user) return res.json(401);
-    res.json(user);
+    if (!thread) return res.json(401);
+    res.json(thread);
   });
 };
 
