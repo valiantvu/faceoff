@@ -85,13 +85,13 @@ UserSchema
   }, 'Email cannot be blank');
 
 // Validate empty password
-UserSchema
-  .path('hashedPassword')
-  .validate(function(hashedPassword) {
-    // if you are authenticating by any of the oauth strategies, don't validate
-    if (authTypes.indexOf(this.provider) !== -1) return true;
-    return hashedPassword.length;
-  }, 'Password cannot be blank');
+// UserSchema
+//   .path('hashedPassword')
+//   .validate(function(hashedPassword) {
+//     // if you are authenticating by any of the oauth strategies, don't validate
+//     if (authTypes.indexOf(this.provider) !== -1) return true;
+//     return hashedPassword.length;
+//   }, 'Password cannot be blank');
 
 // Validate email is not taken
 UserSchema
@@ -115,15 +115,15 @@ var validatePresenceOf = function(value) {
 /**
  * Pre-save hook
  */
-UserSchema
-  .pre('save', function(next) {
-    if (!this.isNew) return next();
+// UserSchema
+//   .pre('save', function(next) {
+//     if (!this.isNew) return next();
 
-    if (!validatePresenceOf(this.hashedPassword) && authTypes.indexOf(this.provider) === -1)
-      next(new Error('Invalid password'));
-    else
-      next();
-  });
+//     if (!validatePresenceOf(this.hashedPassword) && authTypes.indexOf(this.provider) === -1)
+//       next(new Error('Invalid password'));
+//     else
+//       next();
+//   });
 
 /**
  * Methods

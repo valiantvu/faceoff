@@ -5,6 +5,6 @@
 module.exports = {
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/faceoffbackend-dev'
+    uri: 'mongodb://localhost/faceoff-dev'
   }
 };
