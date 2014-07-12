@@ -31,28 +31,33 @@ Thing.find({}).remove(function() {
   });
 });
 
-User.find({}).remove(function() {
-  User.create({
-    first: 'Dave',
-    last: 'GW',
-    email: 'david@gmail.com',
-    phone: 5105550000
-  }, function(err, user) {
-      Photo.find({}).remove(function() {
-        Photo.create({
-          user: user.id,
-          url: 'http://www.michigandaily.com/files/imagecache/fullnode/justified.jpg'
-        }, function(err, photo) {
-          console.log(err);
-          console.log('finished populating photos');
-          user.photos.push(photo.id);
-          user.save();
-        });
-      });
-      console.log(err);
-      console.log('finished populating users');
-    }
-  );
-});
+// User.find({}).remove(function() {
+//   User.create([{
+//     first: 'Dave',
+//     last: 'GW',
+//     email: 'david@gmail.com',
+//     phone: 5105550000
+//   }, {
+//     first: 'Nelson',
+//     last: 'Riley',
+//     email: 'nelson@gmail.com',
+//     phone: 5107779911
+//   }], function(err, user) {
+//       Photo.find({}).remove(function() {
+//         Photo.create({
+//           user: user.id,
+//           url: 'http://www.michigandaily.com/files/imagecache/fullnode/justified.jpg'
+//         }, function(err, photo) {
+//           console.log(err);
+//           console.log('finished populating photos');
+//           user.photos.push(photo.id);
+//           user.save();
+//         });
+//       });
+//       console.log(err);
+//       console.log('finished populating users');
+//     }
+//   );
+// });
 
 

@@ -4,6 +4,7 @@ var Thread = require('./thread.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
+var Photo = require('../photo/photo.model');
 
 var validationError = function(res, err) {
   return res.json(422, err);
@@ -22,15 +23,22 @@ exports.index = function(req, res) {
 
 /**
  * Creates a new thread
+ * req.body.participants -> Expect >= 2 participants -> ex: [ObjectId, ObjectId]
+ * req.body.url -> Photo url -> ex: String
+ * req.body.owner -> Photo owner id -> ex: String
  */
 exports.create = function (req, res, next) {
-  var newThread = new Thread(req.body);
-  // newThread.provider = 'local';
+  var newThread = new Thread({participants: req.body.participants});
   newThread.save(function(err, thread) {
     if (err) return validationError(res, err);
-    // var token = jwt.sign({_id: thread._id }, config.secrets.session, { expiresInMinutes: 60*5 });
-    // res.json({ token: token });
-    res.json({ data: thread });
+    var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
+    newPhoto.save(function(err, photo) {
+      thread.photos.push(photo.id);
+      thread.save(function(err, updatedThread) {
+        console.log('Successfully created new thread with new photo!');
+        res.json({ data: updatedThread });
+      });
+    });
   });
 };
 
