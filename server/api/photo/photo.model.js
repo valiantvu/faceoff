@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PhotoSchema = new Schema({
-  user: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  owner: {type: Schema.Types.ObjectId, ref: 'User'},
   url: {type: String, required: true},
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date}

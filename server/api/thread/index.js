@@ -10,6 +10,6 @@ router.get('/', controller.index);
 router.delete('/:id', controller.destroy);
 router.get('/:id', controller.show);
 router.post('/', controller.create);
-// router.post('/photo', controller.addPhoto);
+router.post('/photos', controller.addPhoto);
 
 module.exports = router;

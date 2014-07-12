@@ -45,7 +45,7 @@ Thing.find({}).remove(function() {
 //   }], function(err, user) {
 //       Photo.find({}).remove(function() {
 //         Photo.create({
-//           user: user.id,
+//           owner: user.id,
 //           url: 'http://www.michigandaily.com/files/imagecache/fullnode/justified.jpg'
 //         }, function(err, photo) {
 //           console.log(err);

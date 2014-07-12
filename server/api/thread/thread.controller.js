@@ -23,6 +23,7 @@ exports.index = function(req, res) {
 
 /**
  * Creates a new thread
+ * Expects the following parameters:
  * req.body.participants -> Expect >= 2 participants -> ex: [ObjectId, ObjectId]
  * req.body.url -> Photo url -> ex: String
  * req.body.owner -> Photo owner id -> ex: String
@@ -33,10 +34,26 @@ exports.create = function (req, res, next) {
     if (err) return validationError(res, err);
     var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
     newPhoto.save(function(err, photo) {
+      if (err) return validationError(res, err);
       thread.photos.push(photo.id);
       thread.save(function(err, updatedThread) {
-        console.log('Successfully created new thread with new photo!');
+        if (err) return validationError(res, err);
         res.json({ data: updatedThread });
+      });
+    });
+  });
+};
+
+// Expects same parameters as + a threadID.
+exports.addPhoto = function(req, res) {
+  var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
+  newPhoto.save(function(err, photo) {
+    Thread.findById(req.body.threadId, function(err, thread) {
+      if (err) return validationError(res, err);
+      thread.photos.push(photo.id);
+      thread.save(function(err, updatedThread) {
+        if (err) return validationError(res, err);
+        res.json({ data: photo });
       });
     });
   });
