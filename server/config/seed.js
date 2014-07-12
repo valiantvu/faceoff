@@ -7,6 +7,7 @@
 
 var Thing = require('../api/thing/thing.model');
 var User = require('../api/user/user.model');
+var Photo = require('../api/photo/photo.model');
 
 Thing.find({}).remove(function() {
   Thing.create({
@@ -30,22 +31,33 @@ Thing.find({}).remove(function() {
   });
 });
 
-User.find({}).remove(function() {
-  User.create({
-    provider: 'local',
-    first: 'Dave',
-    last: 'GW',
-    email: 'david@gmail.com',
-    phone: 5105550000
-  // }, {
-  //   provider: 'local',
-  //   role: 'admin',
-  //   name: 'Admin',
-  //   email: 'admin@admin.com',
-  //   password: 'admin'
-  }, function(err) {
-      console.log(err);
-      console.log('finished populating users');
-    }
-  );
-});
+// User.find({}).remove(function() {
+//   User.create([{
+//     first: 'Dave',
+//     last: 'GW',
+//     email: 'david@gmail.com',
+//     phone: 5105550000
+//   }, {
+//     first: 'Nelson',
+//     last: 'Riley',
+//     email: 'nelson@gmail.com',
+//     phone: 5107779911
+//   }], function(err, user) {
+//       Photo.find({}).remove(function() {
+//         Photo.create({
+//           owner: user.id,
+//           url: 'http://www.michigandaily.com/files/imagecache/fullnode/justified.jpg'
+//         }, function(err, photo) {
+//           console.log(err);
+//           console.log('finished populating photos');
+//           user.photos.push(photo.id);
+//           user.save();
+//         });
+//       });
+//       console.log(err);
+//       console.log('finished populating users');
+//     }
+//   );
+// });
+
+

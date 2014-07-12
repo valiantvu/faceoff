@@ -1,6 +1,6 @@
 'use strict';
 
-var User = require('./user.model');
+var Photo = require('./photo.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
@@ -10,66 +10,66 @@ var validationError = function(res, err) {
 };
 
 /**
- * Get list of users
+ * Get list of photos
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-  User.find({}, function (err, users) {
+  Photo.find({}, function (err, photos) {
     if(err) return res.send(500, err);
-    res.json(200, users);
+    res.json(200, photos);
   });
 };
 
 /**
- * Creates a new user
+ * Creates a new photo
  */
 exports.create = function (req, res, next) {
-  var newUser = new User(req.body);
-  // newUser.provider = 'local';
-  newUser.save(function(err, user) {
+  var newPhoto = new Photo(req.body);
+  // newPhoto.provider = 'local';
+  newPhoto.save(function(err, photo) {
     if (err) return validationError(res, err);
-    // var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
+    // var token = jwt.sign({_id: photo._id }, config.secrets.session, { expiresInMinutes: 60*5 });
     // res.json({ token: token });
-    res.json({ data: user });
+    res.json({ data: photo });
   });
 };
 
 /**
- * Get a single user
+ * Get a single photo
  */
 exports.show = function (req, res, next) {
-  var userId = req.params.id;
+  var photoId = req.params.id;
 
-  User.findById(userId, function (err, user) {
+  Photo.findById(photoId, function (err, photo) {
     if (err) return next(err);
-    if (!user) return res.send(401);
-    res.json(user.profile);
+    if (!photo) return res.send(401);
+    res.json(photo.profile);
   });
 };
 
 /**
- * Deletes a user
+ * Deletes a photo
  * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
-  User.findByIdAndRemove(req.params.id, function(err, user) {
+  Photo.findByIdAndRemove(req.params.id, function(err, photo) {
     if(err) return res.send(500, err);
     return res.send(204);
   });
 };
 
 /**
- * Change a users password
+ * Change a photos password
  */
 exports.changePassword = function(req, res, next) {
-  var userId = req.user._id;
+  var photoId = req.photo._id;
   var oldPass = String(req.body.oldPassword);
   var newPass = String(req.body.newPassword);
 
-  User.findById(userId, function (err, user) {
-    if(user.authenticate(oldPass)) {
-      user.password = newPass;
-      user.save(function(err) {
+  Photo.findById(photoId, function (err, photo) {
+    if(photo.authenticate(oldPass)) {
+      photo.password = newPass;
+      photo.save(function(err) {
         if (err) return validationError(res, err);
         res.send(200);
       });
@@ -83,13 +83,13 @@ exports.changePassword = function(req, res, next) {
  * Get my info
  */
 exports.me = function(req, res, next) {
-  var userId = req.user._id;
-  User.findOne({
-    _id: userId
-  }, '-salt -hashedPassword', function(err, user) { // don't ever give out the password or salt
+  var photoId = req.photo._id;
+  Photo.findOne({
+    _id: photoId
+  }, '-salt -hashedPassword', function(err, photo) { // don't ever give out the password or salt
     if (err) return next(err);
-    if (!user) return res.json(401);
-    res.json(user);
+    if (!photo) return res.json(401);
+    res.json(photo);
   });
 };
 
