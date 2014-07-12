@@ -13,15 +13,15 @@ angular.module('faceoff.cameranew', [
 		// temporary
 		$state.go('friendselect');
 
-    Camera.getPicture().then(function(imageURI) {
-      console.log("Image URI ", imageURI);
-      // $scope.photos.push({uri: imageURI, createdAt: 11});
-    }, function(err) {
-      console.err(err);
-    });
+    // Camera.getPicture().then(function(imageURI) {
+    //   console.log("Image URI ", imageURI);
+    //   // $scope.photos.push({uri: imageURI, createdAt: 11});
+    // }, function(err) {
+    //   console.err(err);
+    // });
 
 	};
 
-	$timeout($scope.shoot, 3000);
+	$timeout($scope.shoot, 200); // make longer
 
 });

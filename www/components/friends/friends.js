@@ -3,10 +3,12 @@ angular.module('faceoff.friends', [
 	'services'
 	])
 
-.controller('FriendsController', function($scope, $state) {
+.controller('FriendsController', function($scope, $state, $ionicModal) {
 
-	$scope.cancel = function() {
-    // do something
-  };
+  $ionicModal.fromTemplateUrl('components/friends/friendchallenge.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
 
 });

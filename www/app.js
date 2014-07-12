@@ -12,7 +12,8 @@ angular.module('app', [
   'faceoff.cameranew',
   'faceoff.friends',
   'faceoff.menu',
-  'faceoff.status'
+  'faceoff.status',
+  'faceoff.thread'
   ])
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
@@ -49,7 +50,14 @@ angular.module('app', [
       templateUrl: "components/friends/friendchallenge.html",
       controller: 'FriendsController'
     })
-    //sidebar views
+
+    .state('thread', {
+      url: "/thread",
+      templateUrl: "components/thread/thread.html",
+      controller: 'ThreadController'
+    })
+
+    //Sidebar Child Views
     .state('menu', {
       url: "/",
       abstract: true,
@@ -58,7 +66,7 @@ angular.module('app', [
     })
 
     .state('menu.status', {
-      url: "/status",
+      url: "status",
       views: {
         'menuContent' :{
           templateUrl: "components/status/status.html",
