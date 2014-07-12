@@ -10,7 +10,9 @@ angular.module('app', [
   'services', // break up later
   'faceoff.signup',
   'faceoff.cameranew',
-  'faceoff.friends'
+  'faceoff.friends',
+  'faceoff.menu',
+  'faceoff.status'
   ])
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
@@ -40,7 +42,30 @@ angular.module('app', [
       url: "/friends",
       templateUrl: "components/friends/friendselect.html",
       controller: 'FriendsController'
-    });
+    })
+
+    .state('friendchallenge', {
+      url: "/friends",
+      templateUrl: "components/friends/friendchallenge.html",
+      controller: 'FriendsController'
+    })
+    //sidebar views
+    .state('menu', {
+      url: "/",
+      abstract: true,
+      templateUrl: "components/menu/menu.html",
+      controller: 'MenuController'
+    })
+
+    .state('menu.status', {
+      url: "/status",
+      views: {
+        'menuContent' :{
+          templateUrl: "components/status/status.html",
+          controller: 'StatusController'
+        }
+      }
+    })
 
   // Default route
   $urlRouterProvider.otherwise('/signup');
