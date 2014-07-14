@@ -14,6 +14,7 @@ var validationError = function(res, err) {
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
+  console.log('req params in index ', req);
   User.find({}, function (err, users) {
     if(err) return res.send(500, err);
     res.json(200, users);
@@ -38,6 +39,7 @@ exports.create = function (req, res, next) {
  * Get a single user
  */
 exports.show = function (req, res, next) {
+  console.log('req params in show ', req);
   var userId = req.params.id;
 
   User.findById(userId, function (err, user) {

@@ -28,6 +28,9 @@ exports.index = function(req, res) {
  * req.body.url -> Photo url -> ex: String
  * req.body.owner -> Photo owner id -> ex: String
  */
+
+
+///{particpants:{id: 53c3fc714dbca9cb1589e695, id:53c3fc714dbca9cb1589e696}, owner:53c3fc714dbca9cb1589e696, url: http://goo.gl/oUgHgn}
 exports.create = function (req, res, next) {
   var newThread = new Thread({participants: req.body.participants});
   newThread.save(function(err, thread) {
