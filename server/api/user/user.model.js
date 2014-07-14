@@ -18,8 +18,8 @@ var UserSchema = new Schema({
   // provider: String,
   // salt: String,
   phone: { type: Number, required: true}, // expect 10 digit # from front end
-  picture: String, //S3 url
-  uuid: String, //string
+  uuid: {type: String, default: ''}, //string
+  picture: {type: String, default: ''}, //S3 url
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date},
   threads: [{type: Schema.Types.ObjectId, ref: 'Thread'}],
