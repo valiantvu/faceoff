@@ -32,6 +32,7 @@ exports.index = function(req, res) {
 
 ///{particpants:{id: 53c3fc714dbca9cb1589e695, id:53c3fc714dbca9cb1589e696}, owner:53c3fc714dbca9cb1589e696, url: http://goo.gl/oUgHgn}
 exports.create = function (req, res, next) {
+  console.log(req.body);
   var newThread = new Thread({participants: req.body.participants});
   newThread.save(function(err, thread) {
     if (err) return validationError(res, err);

@@ -36,11 +36,13 @@ Thing.find({}).remove(function() {
 //     first: 'Dave',
 //     last: 'GW',
 //     email: 'david@gmail.com',
+//     uuid:'23sf23r',
 //     phone: 5105550000
 //   }, {
 //     first: 'Nelson',
 //     last: 'Riley',
 //     email: 'nelson@gmail.com',
+//     uuid:'3453j43534',
 //     phone: 5107779911
 //   }], function(err, user) {
 //       Photo.find({}).remove(function() {
