@@ -30,7 +30,7 @@
     "gulp-rename": "^1.2.0"
   },
   "devDependencies": {
-    "connect-livereload": "~0.4.0"
+    "connect-livereload": "^0.4.0"
   },
   "engines": {
     "node": ">=0.10.0"
