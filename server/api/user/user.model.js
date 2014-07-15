@@ -7,24 +7,16 @@ var crypto = require('crypto');
 var authTypes = ['github', 'twitter', 'facebook', 'google'];
 
 var UserSchema = new Schema({
-  first: {type: String, required: true},
-  last: {type: String, required: true},
-  email: { type: String, lowercase: true},
-  // role: {
-  //   type: String,
-  //   default: 'user'
-  // },
-  // hashedPassword: String,
-  // provider: String,
-  // salt: String,
-  phone: { type: Number, required: true}, // expect 10 digit # from front end
+  phone: { type: Number, required: true},
+  first: {type: String},
+  last: {type: String},
+  email: { type: String},
   uuid: {type: String, default: ''}, //string
   picture: {type: String, default: ''}, //S3 url
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date},
   threads: [{type: Schema.Types.ObjectId, ref: 'Thread'}],
   photos: [{type: Schema.Types.ObjectId, ref: 'Photo'}]
-  //facebook: {},
 });
 
 
