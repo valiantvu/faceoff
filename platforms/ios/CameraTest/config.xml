@@ -28,6 +28,9 @@
     <feature name="Camera">
         <param name="ios-package" value="CDVCamera" />
     </feature>
+    <feature name="Contacts">
+        <param name="ios-package" value="CDVContacts" />
+    </feature>
     <name>CameraTest</name>
     <description>
         A mobile game for sharing funny faces.
