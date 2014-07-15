@@ -1,6 +1,6 @@
-angular.module('services', [])
+angular.module('services', ['ngCordova'])
 
-.factory('AccountService', ['FriendsService', function(FriendsService) {
+.factory('AccountService', ['FriendsService', '$cordovaContacts', function(FriendsService, $cordovaContacts) {
   var user = {};
 
   return {
@@ -8,8 +8,17 @@ angular.module('services', [])
       user = user;
     },
     searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; // 
+      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; //
       return user;
+    },
+    logContacts: function() {
+      console.log("LOGGING");
+      $cordovaContacts.find({fields: ['id', 'displayName']}).then(function(contacts) {
+        console.log("SUCCESS ", contacts);
+      }, function(err) {
+        console.log("ERROR ", err);
+      });
+      console.log("ASYNC BABY");
     }
   }
 }])
@@ -61,6 +70,36 @@ angular.module('services', [])
     }
   }
 })
+
+.factory('Contacts', ['$q', function($q) {
+
+  return {
+    // with promises
+    find: function() {
+      console.log("Promisified Contacts");
+      var q = $q.defer();
+
+      var options = ['id', 'displayName'];
+
+      navigator.contacts.find(function(contacts) {
+        q.resolve(contacts);
+      }, function(err) {
+        q.reject(err);
+      });
+
+      return q.promise;
+    },
+    // without promises
+    log: function() {
+      console.log("Basic Contacts");
+      navigator.contacts.find(['id', 'displayName'], function(contacts) {
+        console.log("Success ", contacts);
+      }, function(err) {
+        console.log(err);
+      });
+    }
+  }
+}])
 
 .factory('Camera', ['$q', function($q) {
  

@@ -25,39 +25,65 @@ angular.module('app', [
     .state('signupphone', {
       url: "/signup",
       templateUrl: "components/signup/signupphone.html",
-      controller: 'SignUpController'
+      controller: 'SignUpController',
+      resolve: {
+        user: function(AccountService) { return {}; }
+      }
     })
 
     .state('signupname', {
       url: "/signup",
       templateUrl: "components/signup/signupname.html",
-      controller: 'SignUpController'
+      controller: 'SignUpController',
+      resolve: {
+        user: function(AccountService) {
+          return AccountService.searchContacts();
+        }
+      }
     })
 
     // new thread
     .state('newthreadgetready', {
       url: "/getready",
       templateUrl: "components/new_thread/getready.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function() { return [] }
+      }
     })
 
     .state('newthreadselect', {
       url: "/selectfriend",
       templateUrl: "components/new_thread/selectfriend.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function(FriendsService) {
+          return FriendsService.all();
+        }
+      }
     })
 
     .state('newthreadconfirm', {
       url: "/confirm",
       templateUrl: "components/new_thread/confirm.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function(FriendsService) {  // friends is only one friend in this case
+          return FriendsService.getSelected();
+        }
+      }
     })
 
-    // threads
+    // thread
     .state('thread', {
       url: "/thread",
       templateUrl: "components/thread/thread.html",
-      controller: 'ThreadController'
+      controller: 'ThreadController',
+      resolve: {
+        thread: function(ThreadsService) {
+          return ThreadsService.getSelected();
+        }
+      }
     })
 
     //Sidebar Child Views
@@ -75,6 +101,11 @@ angular.module('app', [
           templateUrl: "components/status/status.html",
           controller: 'StatusController'
         }
+      },
+      resolve: {
+        threads: function(ThreadsService) {
+          return ThreadsService.all();
+        }
       }
     })
 
@@ -83,9 +114,7 @@ angular.module('app', [
 })
 
 .run(function($ionicPlatform, Device) {
-  console.log("RUNNING APP");
   $ionicPlatform.ready(function() {
-    console.log("PLATFORM READY");
     if(window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();

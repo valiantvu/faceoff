@@ -1,22 +1,105 @@
-angular.module('services', [])
+angular.module('services', ['ngCordova'])
 
-.factory('NewThread', function() {
-
-  var thread = {};
+.factory('AccountService', ['FriendsService', '$cordovaContacts', function(FriendsService, $cordovaContacts) {
+  var user = {};
 
   return {
-    update: function(key, val) {
-      thread[key] = val;
-      return thread;
+    updateUser: function(user) {
+      user = user;
     },
-    reset: function() {
-      thread = {};
+    searchContacts: function() {
+      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; //
+      return user;
     },
-    get: function() {
-      return thread;
+    logContacts: function() {
+      console.log("LOGGING");
+      $cordovaContacts.find({fields: ['id', 'displayName']}).then(function(contacts) {
+        console.log("SUCCESS ", contacts);
+      }, function(err) {
+        console.log("ERROR ", err);
+      });
+      console.log("ASYNC BABY");
+    }
+  }
+}])
+
+.factory('ThreadsService', function() {
+  // Some fake testing data
+  var threads = [
+    { id: 0, first: 'Scruff', last: 'McGruff' },
+    { id: 1, first: 'G.I.', last: 'Joe' },
+    { id: 2, first: 'Miss', last: 'Frizzle' },
+    { id: 3, first: 'Ash', last: 'Ketchum'  }
+  ];
+
+  var selectedThread = { first: 'Empty at First'};
+
+  return {
+    all: function() {
+      return threads;
+    },
+    setSelected: function(thread) {
+      selectedThread = thread;
+    },
+    getSelected: function() {
+      return selectedThread;
     }
   }
 })
+
+.factory('FriendsService', function() {
+  // Some fake testing data
+  var contacts = [
+    { id: 0, first: 'Tim', last: 'McGruff', phone: '7778880001' },
+    { id: 1, first: 'James', last: 'Joe' , phone: '2223334444' },
+    { id: 2, first: 'Swill', last: 'Frizzle', phone: '3334445555' },
+    { id: 3, first: 'Relf', last: 'Ketchum', phone: '1114446666' }
+  ];
+
+  var selectedFriend = { first: 'No one yet' };
+
+  return {
+    all: function() {
+      return contacts;
+    },
+    setSelected: function(friend) {
+      selectedFriend = friend;
+    },
+    getSelected: function() {
+      return selectedFriend;
+    }
+  }
+})
+
+.factory('Contacts', ['$q', function($q) {
+
+  return {
+    // with promises
+    find: function() {
+      console.log("Promisified Contacts");
+      var q = $q.defer();
+
+      var options = ['id', 'displayName'];
+
+      navigator.contacts.find(function(contacts) {
+        q.resolve(contacts);
+      }, function(err) {
+        q.reject(err);
+      });
+
+      return q.promise;
+    },
+    // without promises
+    log: function() {
+      console.log("Basic Contacts");
+      navigator.contacts.find(['id', 'displayName'], function(contacts) {
+        console.log("Success ", contacts);
+      }, function(err) {
+        console.log(err);
+      });
+    }
+  }
+}])
 
 .factory('Camera', ['$q', function($q) {
  
@@ -63,42 +146,6 @@ angular.module('services', [])
     },
     set: function(obj) {
       device = obj;
-    }
-  }
-})
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * A simple example service that returns some data.
- */
-.factory('Friends', function() {
-  // Might use a resource here that returns a JSON array
-
-  // Some fake testing data
-  var friends = [
-    { id: 0, name: 'Scruff McGruff' },
-    { id: 1, name: 'G.I. Joe' },
-    { id: 2, name: 'Miss Frizzle' },
-    { id: 3, name: 'Ash Ketchum' }
-  ];
-
-  return {
-    all: function() {
-      return friends;
-    },
-    get: function(friendId) {
-      // Simple index lookup
-      return friends[friendId];
     }
   }
 });

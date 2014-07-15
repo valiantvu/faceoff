@@ -3,7 +3,7 @@ angular.module('faceoff.signup', [
 	'services'
 	])
 
-.controller('SignUpController', function($scope, $state, user, AccountService) {
+.controller('SignUpController', function($scope, $state, user, AccountService, Contacts) {
 
 	$scope.user = user;
 
@@ -26,6 +26,15 @@ angular.module('faceoff.signup', [
 				// show error in modal
 
 		$state.go('newthreadgetready');
+	};
+
+	$scope.logContacts = function() {
+		// Contacts.find().then(function(contacts) {
+		// 	console.log("CONTACTS ", contacts);
+		// }, function(err) {
+		// 	console.log(err);
+		// });
+		Contacts.log();
 	};
 
 });
