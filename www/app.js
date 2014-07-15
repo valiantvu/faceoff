@@ -60,7 +60,9 @@ angular.module('app', [
       templateUrl: "components/new_thread/confirm.html",
       controller: 'NewThreadController',
       resolve: {
-        friends: function() { return [] }
+        friends: function(FriendsService) {  // friends is only one friend in this case
+          return FriendsService.getSelected();
+        }
       }
     })
 
@@ -68,7 +70,12 @@ angular.module('app', [
     .state('thread', {
       url: "/thread",
       templateUrl: "components/thread/thread.html",
-      controller: 'ThreadController'
+      controller: 'ThreadController',
+      resolve: {
+        thread: function(ThreadsService) {
+          return ThreadsService.getSelected();
+        }
+      }
     })
 
     //Sidebar Child Views

@@ -9,18 +9,11 @@
 
   <ion-content class="has-header" padding="false">
 
-	  <div class="list">
-	    <a class="item item-avatar" href="#">
-	      <img src="img/1.jpg">
-	    	<h2>Conversation</h2>
-	    </a>
-		</div>
-
-    <!-- <ion-list>
-      <ion-item ng-repeat="playlist in playlists | orderBy: 'id'" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}} {{playlist.id}}
+    <ion-list>
+      <ion-item ng-repeat="post in thread">
+        {{post.first}} {{post.last}}
       </ion-item>
-    </ion-list> -->
+    </ion-list>
 
   </ion-content>
 </ion-view>

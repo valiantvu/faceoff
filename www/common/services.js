@@ -9,13 +9,17 @@ angular.module('services', [])
     { id: 3, first: 'Ash', last: 'Ketchum'  }
   ];
 
+  var selectedThread = { first: 'Empty at First'};
+
   return {
     all: function() {
       return threads;
     },
-    one: function(threadId) {
-      // Simple index lookup
-      return threads[threadID];
+    setSelected: function(thread) {
+      selectedThread = thread;
+    },
+    getSelected: function() {
+      return selectedThread;
     }
   }
 })
@@ -29,9 +33,17 @@ angular.module('services', [])
     { id: 3, first: 'Relf', last: 'Ketchum'  }
   ];
 
+  var selectedFriend = { first: 'No one yet' };
+
   return {
     all: function() {
       return contacts;
+    },
+    setSelected: function(friend) {
+      selectedFriend = friend;
+    },
+    getSelected: function() {
+      return selectedFriend;
     }
   }
 })

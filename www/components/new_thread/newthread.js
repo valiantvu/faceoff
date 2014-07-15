@@ -7,7 +7,7 @@ angular.module('faceoff.newthread', [
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 })
 
-.controller('NewThreadController', function($scope, friends, $rootScope, $state, $ionicModal, Camera, $timeout) {
+.controller('NewThreadController', function($scope, friends, FriendsService, $rootScope, $state, $ionicModal, Camera, $timeout) {
 
   $scope = $rootScope;
   $scope.friends = friends;
@@ -26,6 +26,11 @@ angular.module('faceoff.newthread', [
     // }, function(err) {
     //   console.err(err);
     // });
+  };
+
+  $scope.selectFriend = function(friend) {
+    FriendsService.setSelected(friend);
+    $state.go('newthreadconfirm');
   };
 
   // if ($state.current.name === 'newthreadgetready') {
