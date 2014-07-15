@@ -11,21 +11,12 @@ var UserSchema = new Schema({
   first: {type: String},
   last: {type: String},
   email: { type: String},
-  // role: {
-  //   type: String,
-  //   default: 'user'
-  // },
-  // hashedPassword: String,
-  // provider: String,
-  // salt: String,
-   // expect 10 digit # from front end
   uuid: {type: String, default: ''}, //string
   picture: {type: String, default: ''}, //S3 url
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date},
   threads: [{type: Schema.Types.ObjectId, ref: 'Thread'}],
   photos: [{type: Schema.Types.ObjectId, ref: 'Photo'}]
-  //facebook: {},
 });
 
 
