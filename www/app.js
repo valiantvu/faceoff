@@ -25,13 +25,21 @@ angular.module('app', [
     .state('signupphone', {
       url: "/signup",
       templateUrl: "components/signup/signupphone.html",
-      controller: 'SignUpController'
+      controller: 'SignUpController',
+      resolve: {
+        user: function(AccountService) { return {}; }
+      }
     })
 
     .state('signupname', {
       url: "/signup",
       templateUrl: "components/signup/signupname.html",
-      controller: 'SignUpController'
+      controller: 'SignUpController',
+      resolve: {
+        user: function(AccountService) {
+          return AccountService.searchContacts();
+        }
+      }
     })
 
     // new thread

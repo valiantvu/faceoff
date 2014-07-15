@@ -1,5 +1,19 @@
 angular.module('services', [])
 
+.factory('AccountService', ['FriendsService', function(FriendsService) {
+  var user = {};
+
+  return {
+    updateUser: function(user) {
+      user = user;
+    },
+    searchContacts: function() {
+      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; // 
+      return user;
+    }
+  }
+}])
+
 .factory('ThreadsService', function() {
   // Some fake testing data
   var threads = [
@@ -27,10 +41,10 @@ angular.module('services', [])
 .factory('FriendsService', function() {
   // Some fake testing data
   var contacts = [
-    { id: 0, first: 'Tim', last: 'McGruff' },
-    { id: 1, first: 'James', last: 'Joe' },
-    { id: 2, first: 'Swill', last: 'Frizzle' },
-    { id: 3, first: 'Relf', last: 'Ketchum'  }
+    { id: 0, first: 'Tim', last: 'McGruff', phone: '7778880001' },
+    { id: 1, first: 'James', last: 'Joe' , phone: '2223334444' },
+    { id: 2, first: 'Swill', last: 'Frizzle', phone: '3334445555' },
+    { id: 3, first: 'Relf', last: 'Ketchum', phone: '1114446666' }
   ];
 
   var selectedFriend = { first: 'No one yet' };

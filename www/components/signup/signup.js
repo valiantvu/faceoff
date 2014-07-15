@@ -1,21 +1,16 @@
 angular.module('faceoff.signup', [
-	'ionic'
+	'ionic',
+	'services'
 	])
 
-.controller('SignUpController', function($scope, $state) {
+.controller('SignUpController', function($scope, $state, user, AccountService) {
 
-	$scope.signupData = {};
+	$scope.user = user;
 
 	$scope.doPhone = function() {
-		// temporary
+		// phone must be validated by now
+		AccountService.updateUser($scope.user);
 		$state.go('signupname');
-		
-		// if valid phone format
-			// get contacts from phone (service)
-			// if matching phone found
-				// set $scope.singupData.first
-				// set $scope.singupData.last
-			// go to next screen
 
 	};
 
