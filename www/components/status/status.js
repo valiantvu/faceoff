@@ -1,8 +1,11 @@
 angular.module('faceoff.status', [
-	'ionic'
+	'ionic',
+	'services'
 	])
 
-.controller('StatusController', function($scope) {
+.controller('StatusController', function($scope, threads) {
 
+	console.log("THREADS ", threads);
+	$scope.threads = threads;
 
 });

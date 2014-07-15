@@ -38,22 +38,33 @@ angular.module('app', [
     .state('newthreadgetready', {
       url: "/getready",
       templateUrl: "components/new_thread/getready.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function() { return [] }
+      }
     })
 
     .state('newthreadselect', {
       url: "/selectfriend",
       templateUrl: "components/new_thread/selectfriend.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function(FriendsService) {
+          return FriendsService.all();
+        }
+      }
     })
 
     .state('newthreadconfirm', {
       url: "/confirm",
       templateUrl: "components/new_thread/confirm.html",
-      controller: 'NewThreadController'
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function() { return [] }
+      }
     })
 
-    // threads
+    // thread
     .state('thread', {
       url: "/thread",
       templateUrl: "components/thread/thread.html",
@@ -75,6 +86,11 @@ angular.module('app', [
           templateUrl: "components/status/status.html",
           controller: 'StatusController'
         }
+      },
+      resolve: {
+        threads: function(ThreadsService) {
+          return ThreadsService.all();
+        }
       }
     })
 
@@ -83,9 +99,7 @@ angular.module('app', [
 })
 
 .run(function($ionicPlatform, Device) {
-  console.log("RUNNING APP");
   $ionicPlatform.ready(function() {
-    console.log("PLATFORM READY");
     if(window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();

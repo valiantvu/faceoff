@@ -1,19 +1,37 @@
 angular.module('services', [])
 
-.factory('NewThread', function() {
-
-  var thread = {};
+.factory('ThreadsService', function() {
+  // Some fake testing data
+  var threads = [
+    { id: 0, first: 'Scruff', last: 'McGruff' },
+    { id: 1, first: 'G.I.', last: 'Joe' },
+    { id: 2, first: 'Miss', last: 'Frizzle' },
+    { id: 3, first: 'Ash', last: 'Ketchum'  }
+  ];
 
   return {
-    update: function(key, val) {
-      thread[key] = val;
-      return thread;
+    all: function() {
+      return threads;
     },
-    reset: function() {
-      thread = {};
-    },
-    get: function() {
-      return thread;
+    one: function(threadId) {
+      // Simple index lookup
+      return threads[threadID];
+    }
+  }
+})
+
+.factory('FriendsService', function() {
+  // Some fake testing data
+  var contacts = [
+    { id: 0, first: 'Tim', last: 'McGruff' },
+    { id: 1, first: 'James', last: 'Joe' },
+    { id: 2, first: 'Swill', last: 'Frizzle' },
+    { id: 3, first: 'Relf', last: 'Ketchum'  }
+  ];
+
+  return {
+    all: function() {
+      return contacts;
     }
   }
 })
@@ -63,42 +81,6 @@ angular.module('services', [])
     },
     set: function(obj) {
       device = obj;
-    }
-  }
-})
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * A simple example service that returns some data.
- */
-.factory('Friends', function() {
-  // Might use a resource here that returns a JSON array
-
-  // Some fake testing data
-  var friends = [
-    { id: 0, name: 'Scruff McGruff' },
-    { id: 1, name: 'G.I. Joe' },
-    { id: 2, name: 'Miss Frizzle' },
-    { id: 3, name: 'Ash Ketchum' }
-  ];
-
-  return {
-    all: function() {
-      return friends;
-    },
-    get: function(friendId) {
-      // Simple index lookup
-      return friends[friendId];
     }
   }
 });

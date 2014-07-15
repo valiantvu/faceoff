@@ -8,19 +8,22 @@
   <ion-content class="has-header" padding="true">
 
     <img ng-src="{{newThreadImageURI}}" style="width: 100%">
-    <ion-list>
+
+
+    <!-- need a friends service -->
+    <!-- <ion-list>
       <ion-item ui-sref="newthreadconfirm"> Nelly </ion-item>
       <ion-item href="#"> Chris </ion-item>
       <ion-item href="#"> Sarah </ion-item>
       <ion-item href="#"> Jason </ion-item>
       <ion-item href="#"> Will </ion-item>
-    </ion-list>
-
-    <!-- <ion-list>
-      <ion-item ng-repeat="playlist in playlists | orderBy: 'id'" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}} {{playlist.id}}
-      </ion-item>
     </ion-list> -->
+
+    <ion-list>
+      <ion-item ng-repeat="friend in friends | orderBy: 'id'">
+        {{friend.first}} {{friend.last}} {{friend.id}}
+      </ion-item>
+    </ion-list>
 
   </ion-content>
 </ion-view>
