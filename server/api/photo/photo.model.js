@@ -5,7 +5,8 @@ var Schema = mongoose.Schema;
 
 var PhotoSchema = new Schema({
   owner: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-  url: {type: String, required: true},
+  url: {type: String},
+  cloudStatus: {type: String, default: false},
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date}
 });

@@ -5,8 +5,12 @@
 'use strict';
 
 var errors = require('./components/errors');
+//var busboy = require('connect-busboy');
 
 module.exports = function(app) {
+
+  //Handles HTML form processing of pictures
+  //app.use(busboy());
 
   // Insert routes below
   app.use('/api/things', require('./api/thing'));
