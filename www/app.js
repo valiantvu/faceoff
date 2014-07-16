@@ -9,17 +9,26 @@ angular.module('app', [
   'ionic', 
   'services', // break up later
   'ngCordova',
+  'faceoff.startup',
   'faceoff.signup',
   'faceoff.newthread',
   'faceoff.menu',
   'faceoff.status',
-  'faceoff.thread'
+  'faceoff.thread',
+  'faceoff.confirmaccount'
   ])
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 
   $stateProvider
+
+    // start up
+    .state('startup', {
+      url: "/startup",
+      templateUrl: "components/startup/startup.html",
+      controller: 'StartUpController'
+    })
 
     // sign up
     .state('signupphone', {
@@ -40,6 +49,13 @@ angular.module('app', [
           return AccountService.searchContacts();
         }
       }
+    })
+
+    // confirm account
+    .state('confirmaccount', {
+      url: "/confirmaccount",
+      templateUrl: "components/confirm_account/confirmaccount.html",
+      controller: 'ConfirmAccountController'
     })
 
     // new thread
@@ -110,7 +126,7 @@ angular.module('app', [
     })
 
   // Default route
-  $urlRouterProvider.otherwise('/signup');
+  $urlRouterProvider.otherwise('/startup');
 })
 
 .run(function($ionicPlatform, Device) {

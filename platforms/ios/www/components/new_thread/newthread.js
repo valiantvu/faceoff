@@ -17,15 +17,15 @@ angular.module('faceoff.newthread', [
   // make countdown timer that visually updates on page, before launching camera
 
   $scope.shoot = function() {
-    // short circuit for chrome debugging
-    $state.go('newthreadselect');
     // check for device type and launch webcam or phone cam here
-    // Camera.getPicture().then(function(imageURI) {
-    //   $rootScope.newThreadImageURI = imageURI;
-    //   $state.go('newthreadselect');
-    // }, function(err) {
-    //   console.err(err);
-    // });
+
+    // using getRandomPicture instead of getPicture for faster testing
+    Camera.getRandomPicture().then(function(imageURI) {
+      $rootScope.newThreadImageURI = imageURI;
+      $state.go('newthreadselect');
+    }, function(err) {
+      console.err(err);
+    });
   };
 
   $scope.selectFriend = function(friend) {
