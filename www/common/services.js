@@ -164,7 +164,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     // for development purposes, a "virtual promise"
     getRandomPicture: function() {
       var q = $q.defer();
-      var numImages = 28;
+      var numImages = 26;
       var directory = 'img/seedFaces/';
       var index = Math.ceil(Math.random()*numImages);
       q.resolve(directory+index+'.jpg');
