@@ -1,7 +1,8 @@
 
 <div class="bar bar-header bar-stable">
-  <button ui-sref="menu.status" class="button button-icon icon ion-chevron-left"> Back</button>
-  <div class="h1 title">Friend</div>
+  <button class="button button-icon icon ion-arrow-left-c" ui-sref="menu.status"></button>
+  <div class="h1 title">{{thread[1].first}}</div>
+  <button class="button button-icon icon ion-reply" ui-sref="newthreadgetready"></button>
 </div>
 
 
@@ -9,11 +10,14 @@
 
   <ion-content class="has-header" padding="false">
 
-    <ion-list>
-      <ion-item ng-repeat="post in thread">
-        {{post.first}} {{post.last}}
-      </ion-item>
-    </ion-list>
+    <!--orderBy:'createdAt' does not work with css margin. Need array in chronological order-->
+    <div ng-repeat="photo in photos" ng-class="{'offset' : $index > 0 && photos[$index - 1].owner.id !== photo.owner.id}">
+      <div class="row">
+        <div class="col-50" ng-class="{'col-offset-50': photo.owner === thread[0]}">
+          <img ng-src="{{photo.photoURL}}" class="thread-photo">
+        </div>
+      </div>
+    </div>
 
   </ion-content>
 </ion-view>
