@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "An Ionic project",
   "dependencies": {
+    "aws-sdk": "^2.0.8",
     "body-parser": "~1.0.0",
+    "busboy": "^0.2.8",
     "composable-middleware": "^0.3.0",
     "compression": "~1.0.1",
+    "connect-busboy": "0.0.1",
     "connect-mongo": "^0.4.1",
     "cookie-parser": "~1.0.1",
     "ejs": "~0.8.4",
@@ -28,6 +31,7 @@
     "q": "^1.0.1",
     "socket.io": "~0.9.16",
     "socketio-jwt": "^2.0.2",
+<<<<<<< HEAD
     "static-favicon": "~1.0.1",
     "gulp": "^3.5.6",
     "gulp-sass": "^0.7.1",
@@ -37,6 +41,9 @@
     "q": "^1.0.1",
     "busboy": "^0.2.8",
     "aws-sdk": "^2.0.8"
+=======
+    "static-favicon": "~1.0.1"
+>>>>>>> 8b989b35731c50bad1e475e4d148913bfa36b34b
   },
   "devDependencies": {
     "connect-livereload": "^0.4.0"
