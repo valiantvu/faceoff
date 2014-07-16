@@ -68,6 +68,16 @@ angular.module('app', [
       }
     })
 
+    // reply thread
+    .state('replyphoto', {
+      url: '/getready/:recipientId',
+      templateUrl: 'components/new_thread/getready.html',
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function() { return [] }
+      }
+    })
+
     .state('newthreadselect', {
       url: '/selectfriend',
       templateUrl: 'components/new_thread/selectfriend.html',
@@ -80,12 +90,12 @@ angular.module('app', [
     })
 
     .state('newthreadconfirm', {
-      url: '/confirm',
+      url: '/confirm/:friendId',
       templateUrl: 'components/new_thread/confirm.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function(FriendsService) {  // friends is only one friend in this case
-          return FriendsService.getSelected();
+          return FriendsService.getSelected(); // need to refactor to get friend using ID.
         }
       }
     })
