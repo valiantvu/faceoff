@@ -14,7 +14,8 @@ angular.module('app', [
   'faceoff.newthread',
   'faceoff.menu',
   'faceoff.status',
-  'faceoff.thread'
+  'faceoff.thread',
+  'faceoff.confirmaccount'
   ])
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
@@ -48,6 +49,13 @@ angular.module('app', [
           return AccountService.searchContacts();
         }
       }
+    })
+
+    // confirm account
+    .state('confirmaccount', {
+      url: "/confirmaccount",
+      templateUrl: "components/confirm_account/confirmaccount.html",
+      controller: 'ConfirmAccountController'
     })
 
     // new thread

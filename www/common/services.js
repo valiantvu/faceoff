@@ -1,7 +1,9 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
-  var user = {};
+  var user = {status: 'pending'};
+  // if no user in local storage create one now, add uuid
+  // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
 
   return {
     updateUser: function(user) {
@@ -20,8 +22,19 @@ angular.module('services', ['ngCordova', 'ionic'])
       });
       console.log("ASYNC BABY");
     },
-    go: function() {
-      $state.go('menu.status');
+    authAndRoute: function() {
+      if (user.status === 'fresh') {
+        $state.go($signupphone);
+      } else if (user.status === 'pending') {
+        // update from server now, THEN check again:
+          if (user.status === 'confirmed') {
+            $state.go('menu.status');
+          } else {
+            $state.go('confirmaccount');
+          }
+      } else if (user.status === 'confirmed') {
+        $state.go('menu.status');
+      }
     }
   }
 }])

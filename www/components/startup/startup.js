@@ -6,6 +6,6 @@ angular.module('faceoff.startup', [
 .controller('StartUpController', function($scope, $state, AccountService) {
 
 	// startup loading screen while AccountService decides which state to go to
-	AccountService.go();
+	AccountService.authAndRoute();
 
 });
