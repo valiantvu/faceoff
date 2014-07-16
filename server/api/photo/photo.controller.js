@@ -1,12 +1,11 @@
 'use strict';
 
 var Photo = require('./photo.model');
+var Thread = require('../thread/thread.model');
 var passport = require('passport');
 var config = require('../../config/environment');
-//var busboy = require('connect-busboy');
 var Busboy = require('busboy');
 var path = require('path');   
-//var fs = require('fs-extra');
 var fs = require('fs');
 var AWS = require('aws-sdk');
 var inspect = require('util').inspect;
@@ -31,7 +30,7 @@ exports.index = function(req, res) {
 };
 
 /**
- * Creates a new photo
+ * Creates a new photo, expects ownerId, picture, threadID
  */
 exports.create = function (req, res, next) {
 
@@ -68,7 +67,7 @@ exports.create = function (req, res, next) {
       console.log('photo data', photoData);
 
       //check to see we have the required photo model data from the post
-      if (photoData.owner && photoData.photo){
+      if (photoData.owner && photoData.photo && photoData.threadId){
 
         var newPhoto = new Photo(photoData);
         newPhoto.save(function(err, photo) {
@@ -77,10 +76,21 @@ exports.create = function (req, res, next) {
           photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
           photo.cloudStatus = 'pending';
           photo.name= photo.id;
+          //set the photo name to the photo object id
           photo.save(function(err, photo) {
             if (err) return validationError(res, err);
             exports.uploadToCloud(photo, photoData.photo, photo.id);
             res.json({ data: photo });
+          });
+          //add this photo to the thread
+          Thread.findById(photoData.threadId, function(err, thread) {
+            if (err) return validationError(res, err);
+            thread.photos.push(photo.id);
+            thread.save(function(err, updatedThread) {
+            if (err) return validationError(res, err);
+            //res.json({ data: photo });
+            console.log('photo added to thread', updatedThread);
+            });
           });
         });
       } else {
