@@ -25,6 +25,9 @@ angular.module('services', ['ngCordova'])
 
 .factory('ThreadsService', function() {
   // Some fake testing data
+  var currentUser = {
+    id: 4, first: 'Dave', last: 'G-W', phone: '5552221111'
+  }
   var threads = [
     { id: 0, first: 'Scruff', last: 'McGruff' },
     { id: 1, first: 'G.I.', last: 'Joe' },
@@ -39,7 +42,7 @@ angular.module('services', ['ngCordova'])
       return threads;
     },
     setSelected: function(thread) {
-      selectedThread = thread;
+      selectedThread = [currentUser, thread]
     },
     getSelected: function() {
       return selectedThread;
