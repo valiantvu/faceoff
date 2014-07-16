@@ -10,7 +10,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
   ];
 
-  var user = dummyUsers[3];
+  var user = dummyUsers[0];
   // if no user in local storage create one now, add uuid
   // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
 
