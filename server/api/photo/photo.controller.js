@@ -111,8 +111,8 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
   console.log('upload to cloud got photo id of ' +  photoId + 'and name '+ photoName);
 
 
-  var accessKeyId =  process.env.AWS_ACCESS_KEY || AWS_CREDS.AWS_KEY;
-  var secretAccessKey = process.env.AWS_SECRET_KEY || AWS_CREDS.AWS_SECRET;
+  var accessKeyId =  process.env.AWS_KEY || AWS_CREDS.AWS_KEY;
+  var secretAccessKey = process.env.AWS_SECRET || AWS_CREDS.AWS_SECRET;
 
   AWS.config.update({
     accessKeyId: accessKeyId,
