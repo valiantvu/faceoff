@@ -11,6 +11,10 @@ var fs = require('fs');
 var AWS = require('aws-sdk');
 var inspect = require('util').inspect;
 
+if(config.env === 'development') { 
+  var AWS_CREDS = require('../../config/local.env.js');
+ };
+
 var validationError = function(res, err) {
   return res.json(422, err);
 };
@@ -91,11 +95,14 @@ exports.create = function (req, res, next) {
 
 exports.uploadToCloud = function (photo, photoName, photoId) {
 
+
+
+
   console.log('upload to cloud got photo id of ' +  photoId + 'and name '+ photoName);
 
 
-  var accessKeyId =  process.env.AWS_ACCESS_KEY || "AKIAJSKIQ2DDKZOPG5KA";
-  var secretAccessKey = process.env.AWS_SECRET_KEY || "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";
+  var accessKeyId =  process.env.AWS_ACCESS_KEY || AWS_CREDS.AWS_KEY;
+  var secretAccessKey = process.env.AWS_SECRET_KEY || AWS_CREDS.AWS_SECRET;
 
   AWS.config.update({
     accessKeyId: accessKeyId,
