@@ -11,7 +11,9 @@ module.exports = function(app) {
   // Enable CORS header for all incoming requests
   app.use('/*',function(req,res,next){
       res.header({
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'content-type, accept'
       });
       next();
   });
