@@ -9,6 +9,7 @@ angular.module('app', [
   'ionic', 
   'services', // break up later
   'ngCordova',
+  'faceoff.startup',
   'faceoff.signup',
   'faceoff.newthread',
   'faceoff.menu',
@@ -20,6 +21,13 @@ angular.module('app', [
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 
   $stateProvider
+
+    // start up
+    .state('startup', {
+      url: "/startup",
+      templateUrl: "components/startup/startup.html",
+      controller: 'StartUpController'
+    })
 
     // sign up
     .state('signupphone', {
@@ -110,7 +118,7 @@ angular.module('app', [
     })
 
   // Default route
-  $urlRouterProvider.otherwise('/signup');
+  $urlRouterProvider.otherwise('/startup');
 })
 
 .run(function($ionicPlatform, Device) {

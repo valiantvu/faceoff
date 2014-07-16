@@ -1,6 +1,6 @@
-angular.module('services', ['ngCordova'])
+angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['FriendsService', '$cordovaContacts', function(FriendsService, $cordovaContacts) {
+.factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
   var user = {};
 
   return {
@@ -19,6 +19,9 @@ angular.module('services', ['ngCordova'])
         console.log("ERROR ", err);
       });
       console.log("ASYNC BABY");
+    },
+    go: function() {
+      $state.go('menu.status');
     }
   }
 }])
@@ -136,7 +139,7 @@ angular.module('services', ['ngCordova'])
     getRandomPicture: function() {
       var q = $q.defer();
       var numImages = 28;
-      var directory = 'img/seedFaces/';
+      var directory = 'img/seedFace';
       var index = Math.ceil(Math.random()*numImages);
       q.resolve(directory+index+'.jpg');
       return q.promise;
