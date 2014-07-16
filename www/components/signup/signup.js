@@ -3,7 +3,7 @@ angular.module('faceoff.signup', [
 	'services'
 	])
 
-.controller('SignUpController', function($scope, $state, user, AccountService, Contacts, $ionicPopup) {
+.controller('SignUpController', function($scope, $state, user, AccountService, Contacts, $ionicPopup, Device) {
 
 	$scope.user = user;
 
@@ -44,6 +44,13 @@ angular.module('faceoff.signup', [
 		// }, function(err) {
 		// 	console.log(err);
 		// });
+
+		// testing
+		console.log('XCODE');
+		var localUser = JSON.parse(localStorage.getItem('user'));
+		console.log('Local User uuid is ', localUser.uuid);
+		console.log('Test is ', localUser.test);
+
 		Contacts.log();
 	};
 

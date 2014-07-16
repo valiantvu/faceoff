@@ -1,7 +1,7 @@
 <ion-side-menus>
 
   <ion-pane ion-side-menu-content>
-    <ion-nav-bar class="bar-stable nav-title-slide-ios7">
+    <ion-nav-bar class="bar-stable">
       <ion-nav-back-button class="button-clear"><i class="icon ion-ios7-arrow-back"></i> Back</ion-nav-back-button>
     </ion-nav-bar>
     <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
@@ -14,8 +14,13 @@
     <ion-content class="has-header">
       <ion-list>
 
-        <ion-item nav-clear menu-close ui-sref="menu.status">
-          Status
+        <ion-item nav-clear menu-close ui-sref="newthreadgetready" class="item item-icon-left">
+          <i class="icon ion-camera"></i>
+          Make a Face
+        </ion-item>
+        <ion-item nav-clear menu-close ui-sref="menu.status" class="item item-icon-left">
+          <i class="icon ion-chatboxes"></i>
+          Face Offs
         </ion-item>
 
 <!--         <ion-item nav-clear menu-close ui-sref="menu.profile">

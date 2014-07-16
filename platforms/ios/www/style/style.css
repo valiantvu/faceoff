@@ -1,1 +1,9 @@
 /* Empty. Add your own CSS if you like */
+.offset {
+  margin-top: -30%;
+  position: relative;
+}
+.thread-photo {
+  width:100%;
+  padding: 0 3%;
+}

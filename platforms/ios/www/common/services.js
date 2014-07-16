@@ -1,14 +1,25 @@
-angular.module('services', ['ngCordova'])
+angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['FriendsService', '$cordovaContacts', function(FriendsService, $cordovaContacts) {
-  var user = {};
+.factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
+  
+  // Some fake testing data
+  var dummyUsers = [
+    { id: 0, status: 'fresh', UUID: '1234' },
+    { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', UUID: '2345', phone: 1112223333 },
+    { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', UUID: '3456', phone: 2223334444 },
+    { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
+  ];
+
+  var user = dummyUsers[0];
+  // if no user in local storage create one now, add uuid
+  // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
 
   return {
     updateUser: function(user) {
       user = user;
     },
     searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; //
+      var user = FriendsService.all()[0]; // perform search
       return user;
     },
     logContacts: function() {
@@ -19,17 +30,36 @@ angular.module('services', ['ngCordova'])
         console.log("ERROR ", err);
       });
       console.log("ASYNC BABY");
+    },
+    authAndRoute: function() {
+      // we assume user is from local storage
+      if (user.status === 'fresh') {
+        $state.go('signupphone');
+      } else if (user.status === 'pending') {
+        // update from server now, THEN check again:
+          if (user.status === 'confirmed') {
+            $state.go('menu.status');
+          } else {
+            $state.go('confirmaccount');
+          }
+      } else if (user.status === 'confirmed') {
+        $state.go('menu.status');
+      }
     }
   }
 }])
 
 .factory('ThreadsService', function() {
   // Some fake testing data
+  var seedImgPath = 'img/seedFaces/'
+  var currentUser = {
+    id: 4, first: 'Dave', last: 'G-W', phone: '5552221111'
+  }
   var threads = [
-    { id: 0, first: 'Scruff', last: 'McGruff' },
-    { id: 1, first: 'G.I.', last: 'Joe' },
-    { id: 2, first: 'Miss', last: 'Frizzle' },
-    { id: 3, first: 'Ash', last: 'Ketchum'  }
+    { id: 0, first: 'Scruff', last: 'McGruff', new: true, photos: [seedImgPath+'1.jpg', seedImgPath+'9.jpg', seedImgPath+'5.jpg', seedImgPath+'10.jpg'] },
+    { id: 1, first: 'G.I.', last: 'Joe', new: false, photos: [seedImgPath+'10.jpg', seedImgPath+'4.jpg', seedImgPath+'6.jpg', seedImgPath+'7.jpg'] },
+    { id: 2, first: 'Miss', last: 'Frizzle', new: true, photos: [seedImgPath+'3.jpg', seedImgPath+'8.jpg', seedImgPath+'12.jpg', seedImgPath+'1.jpg'] },
+    { id: 3, first: 'Ash', last: 'Ketchum', new: false, photos: [seedImgPath+'5.jpg', seedImgPath+'9.jpg', seedImgPath+'11.jpg', seedImgPath+'2.jpg'] }
   ];
 
   var selectedThread = { first: 'Empty at First'};
@@ -39,7 +69,7 @@ angular.module('services', ['ngCordova'])
       return threads;
     },
     setSelected: function(thread) {
-      selectedThread = thread;
+      selectedThread = [currentUser, thread]
     },
     getSelected: function() {
       return selectedThread;
@@ -135,8 +165,8 @@ angular.module('services', ['ngCordova'])
     // for development purposes, a "virtual promise"
     getRandomPicture: function() {
       var q = $q.defer();
-      var numImages = 8;
-      var directory = 'img/';
+      var numImages = 26;
+      var directory = 'img/seedFaces/';
       var index = Math.ceil(Math.random()*numImages);
       q.resolve(directory+index+'.jpg');
       return q.promise;

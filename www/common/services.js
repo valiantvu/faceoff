@@ -32,6 +32,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       console.log("ASYNC BABY");
     },
     authAndRoute: function() {
+      // we assume user is from local storage
       if (user.status === 'fresh') {
         $state.go('signupphone');
       } else if (user.status === 'pending') {
@@ -164,7 +165,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     // for development purposes, a "virtual promise"
     getRandomPicture: function() {
       var q = $q.defer();
-      var numImages = 28;
+      var numImages = 26;
       var directory = 'img/seedFaces/';
       var index = Math.ceil(Math.random()*numImages);
       q.resolve(directory+index+'.jpg');

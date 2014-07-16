@@ -139,13 +139,22 @@ angular.module('app', [
   $urlRouterProvider.otherwise('/startup');
 })
 
+// run time (startup)
 .run(function($ionicPlatform, Device) {
   $ionicPlatform.ready(function() {
-    if(window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
+
+    console.log('Platform Ready');
+
     // Grab and set all device details (ie uuid)
     Device.set(ionic.Platform.device());
+    console.log('Device UUID ', Device.get('uuid'));
+    
+    // if a user doesn't exist in local storage, create one
+    if (window.localStorage.getItem('user') === null) {
+      console.log('Creating new user in local storage');
+      var newUser = { status: 'fresh', uuid: Device.get('uuid') };
+      window.localStorage.setItem('user', JSON.stringify(newUser));
+    }
+    
   });
 });
