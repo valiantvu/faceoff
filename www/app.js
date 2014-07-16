@@ -23,8 +23,8 @@ angular.module('app', [
 
     // sign up
     .state('signupphone', {
-      url: "/signup",
-      templateUrl: "components/signup/signupphone.html",
+      url: '/signup',
+      templateUrl: 'components/signup/signupphone.html',
       controller: 'SignUpController',
       resolve: {
         user: function(AccountService) { return {}; }
@@ -32,8 +32,8 @@ angular.module('app', [
     })
 
     .state('signupname', {
-      url: "/signup",
-      templateUrl: "components/signup/signupname.html",
+      url: '/signup',
+      templateUrl: 'components/signup/signupname.html',
       controller: 'SignUpController',
       resolve: {
         user: function(AccountService) {
@@ -44,8 +44,8 @@ angular.module('app', [
 
     // new thread
     .state('newthreadgetready', {
-      url: "/getready",
-      templateUrl: "components/new_thread/getready.html",
+      url: '/getready',
+      templateUrl: 'components/new_thread/getready.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function() { return [] }
@@ -53,8 +53,8 @@ angular.module('app', [
     })
 
     .state('newthreadselect', {
-      url: "/selectfriend",
-      templateUrl: "components/new_thread/selectfriend.html",
+      url: '/selectfriend',
+      templateUrl: 'components/new_thread/selectfriend.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function(FriendsService) {
@@ -64,8 +64,8 @@ angular.module('app', [
     })
 
     .state('newthreadconfirm', {
-      url: "/confirm",
-      templateUrl: "components/new_thread/confirm.html",
+      url: '/confirm',
+      templateUrl: 'components/new_thread/confirm.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function(FriendsService) {  // friends is only one friend in this case
@@ -76,8 +76,8 @@ angular.module('app', [
 
     // thread
     .state('thread', {
-      url: "/thread",
-      templateUrl: "components/thread/thread.html",
+      url: '/thread',
+      templateUrl: 'components/thread/thread.html',
       controller: 'ThreadController',
       resolve: {
         thread: function(ThreadsService) {
@@ -88,17 +88,17 @@ angular.module('app', [
 
     //Sidebar Child Views
     .state('menu', {
-      url: "/",
+      url: '/',
       abstract: true,
-      templateUrl: "components/menu/menu.html",
+      templateUrl: 'components/menu/menu.html',
       controller: 'MenuController'
     })
 
     .state('menu.status', {
-      url: "status",
+      url: 'status',
       views: {
-        'menuContent' :{
-          templateUrl: "components/status/status.html",
+        'menuContent': {
+          templateUrl: 'components/status/status.html',
           controller: 'StatusController'
         }
       },
