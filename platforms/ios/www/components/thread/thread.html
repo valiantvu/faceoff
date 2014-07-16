@@ -1,0 +1,21 @@
+
+<div class="bar bar-header bar-stable">
+  <button ui-sref="menu.status" class="button button-icon icon ion-chevron-left"> Back</button>
+  <div class="h1 title">Friend</div>
+</div>
+
+
+<ion-view title="Friend">
+
+  <ion-content class="has-header" padding="false">
+
+    <ion-list>
+      <ion-item ng-repeat="post in thread">
+        {{post.first}} {{post.last}}
+      </ion-item>
+    </ion-list>
+
+  </ion-content>
+</ion-view>
+
+

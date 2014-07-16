@@ -1,0 +1,20 @@
+<ion-view title="Select a Friend">
+  <ion-nav-bar>
+    <ion-nav-buttons side="right">
+      <button class="button button-clear" ui-sref="newthreadgetready">Cancel</button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+  <ion-content class="has-header" padding="true">
+
+    <img ng-src="{{newThreadImageURI}}" style="width: 100%">
+
+    <ion-list>
+      <ion-item ng-repeat="friend in friends | orderBy: 'id'" ng-click="selectFriend(friend.id)">
+        {{friend.first}} {{friend.last}} {{friend.id}}
+      </ion-item>
+    </ion-list>
+
+  </ion-content>
+</ion-view>
+
