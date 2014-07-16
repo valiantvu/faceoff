@@ -2,7 +2,7 @@ angular.module('faceoff.thread', [
 	'ionic'
 	])
 
-.controller('ThreadController', function($scope, thread, Camera, $timeout) {
+.controller('ThreadController', function($scope, thread, Camera, $timeout, $location, $state) {
   console.log("THREAD " ,thread)
 	$scope.thread = thread; // current user is the first object in array
   $scope.photos = [];
@@ -16,7 +16,12 @@ angular.module('faceoff.thread', [
       $scope.photos.push(photoObj);
     })
   }
+
+  $scope.replyPhoto = function(recipient) {
+    $state.go('replyphoto', {recipientId: recipient.id});
+  };
+
   $timeout(function() {
     console.log('THREAD PHOTOS: ', $scope.photos);
-  },200)
+  },200);
 });
