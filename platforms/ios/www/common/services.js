@@ -131,6 +131,15 @@ angular.module('services', ['ngCordova'])
       }, options);
       
       return q.promise;
+    },
+    // for development purposes, a "virtual promise"
+    getRandomPicture: function() {
+      var q = $q.defer();
+      var numImages = 8;
+      var directory = 'img/';
+      var index = Math.ceil(Math.random()*numImages);
+      q.resolve(directory+index+'.jpg');
+      return q.promise;
     }
   }
 }])
