@@ -50,14 +50,15 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('ThreadsService', function() {
   // Some fake testing data
+  var seedImgPath = 'img/seedFaces/'
   var currentUser = {
     id: 4, first: 'Dave', last: 'G-W', phone: '5552221111'
   }
   var threads = [
-    { id: 0, first: 'Scruff', last: 'McGruff', new: true, photos: ['img/1.jpg', 'img/9.jpg', 'img/5.jpg', 'img/10.jpg'] },
-    { id: 1, first: 'G.I.', last: 'Joe', new: false, photos: ['img/10.jpg', 'img/4.jpg', 'img/6.jpg', 'img/7.jpg'] },
-    { id: 2, first: 'Miss', last: 'Frizzle', new: true, photos: ['img/3.jpg', 'img/8.jpg', 'img/12.jpg', 'img/1.jpg'] },
-    { id: 3, first: 'Ash', last: 'Ketchum', new: false, photos: ['img/5.jpg', 'img/9.jpg', 'img/11.jpg', 'img/2.jpg'] }
+    { id: 0, first: 'Scruff', last: 'McGruff', new: true, photos: [seedImgPath+'1.jpg', seedImgPath+'9.jpg', seedImgPath+'5.jpg', seedImgPath+'10.jpg'] },
+    { id: 1, first: 'G.I.', last: 'Joe', new: false, photos: [seedImgPath+'10.jpg', seedImgPath+'4.jpg', seedImgPath+'6.jpg', seedImgPath+'7.jpg'] },
+    { id: 2, first: 'Miss', last: 'Frizzle', new: true, photos: [seedImgPath+'3.jpg', seedImgPath+'8.jpg', seedImgPath+'12.jpg', seedImgPath+'1.jpg'] },
+    { id: 3, first: 'Ash', last: 'Ketchum', new: false, photos: [seedImgPath+'5.jpg', seedImgPath+'9.jpg', seedImgPath+'11.jpg', seedImgPath+'2.jpg'] }
   ];
 
   var selectedThread = { first: 'Empty at First'};
@@ -164,7 +165,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     getRandomPicture: function() {
       var q = $q.defer();
       var numImages = 28;
-      var directory = 'img/seedFace';
+      var directory = 'img/seedFaces/';
       var index = Math.ceil(Math.random()*numImages);
       q.resolve(directory+index+'.jpg');
       return q.promise;
