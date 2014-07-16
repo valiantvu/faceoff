@@ -5,12 +5,16 @@
 'use strict';
 
 var errors = require('./components/errors');
-//var busboy = require('connect-busboy');
 
 module.exports = function(app) {
 
-  //Handles HTML form processing of pictures
-  //app.use(busboy());
+  // Enable CORS header for all incoming requests
+  app.use('/*',function(req,res,next){
+      res.header({
+        'Access-Control-Allow-Origin': '*'
+      });
+      next();
+  });
 
   // Insert routes below
   app.use('/api/things', require('./api/thing'));
