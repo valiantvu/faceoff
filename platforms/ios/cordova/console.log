@@ -1395,3 +1395,20 @@ objc[68544]: Class AXEmojiUtilities is implemented in both /Applications/Xcode.a
 2014-07-14 12:14:35.377 CameraTest[23586:70b] Camera.getPicture: source type 1 not available.
 2014-07-14 12:14:37.831 CameraTest[23586:70b] ACTIVATING
 2014-07-14 12:14:38.372 CameraTest[23586:70b] Camera.getPicture: source type 1 not available.
+2014-07-15 12:18:52.301 CameraTest[43161:70b] Multi-tasking -> Device: YES, App: YES
+2014-07-15 12:18:52.336 CameraTest[43161:70b] Unlimited access to network resources
+2014-07-15 12:18:52.730 CameraTest[43161:70b] CDVPlugin class CDVStatusBar (pluginName: statusbar) does not exist.
+2014-07-15 12:18:52.731 CameraTest[43161:70b] [CDVTimer][statusbar] 0.588000ms
+2014-07-15 12:18:52.731 CameraTest[43161:70b] [CDVTimer][TotalPluginStartup] 0.990987ms
+2014-07-15 12:18:52.936 CameraTest[43161:70b] Resetting plugins due to page load.
+2014-07-15 12:18:53.304 CameraTest[43161:70b] Finished load of: file:///Users/nelly/Library/Application%20Support/iPhone%20Simulator/7.1/Applications/B0664EB9-BAF0-4306-B8B7-729FF38281EB/CameraTest.app/www/index.html#/signup
+2014-07-15 12:18:57.910 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:18:59.095 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:06.093 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:06.178 CameraTest[43161:70b] THREADS  [object Object],[object Object],[object Object],[object Object]
+2014-07-15 12:19:08.474 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:11.041 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:11.102 CameraTest[43161:70b] THREADS  [object Object],[object Object],[object Object],[object Object]
+2014-07-15 12:19:12.433 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:51.511 CameraTest[43161:70b] ACTIVATING
+2014-07-15 12:19:51.574 CameraTest[43161:70b] THREADS  [object Object],[object Object],[object Object],[object Object]

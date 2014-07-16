@@ -9,11 +9,13 @@ angular.module('app', [
   'ionic', 
   'services', // break up later
   'ngCordova',
+  'faceoff.startup',
   'faceoff.signup',
   'faceoff.newthread',
   'faceoff.menu',
   'faceoff.status',
-  'faceoff.thread'
+  'faceoff.thread',
+  'faceoff.confirmaccount'
   ])
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
@@ -21,10 +23,17 @@ angular.module('app', [
 
   $stateProvider
 
+    // start up
+    .state('startup', {
+      url: "/startup",
+      templateUrl: "components/startup/startup.html",
+      controller: 'StartUpController'
+    })
+
     // sign up
     .state('signupphone', {
-      url: "/signup",
-      templateUrl: "components/signup/signupphone.html",
+      url: '/signup',
+      templateUrl: 'components/signup/signupphone.html',
       controller: 'SignUpController',
       resolve: {
         user: function(AccountService) { return {}; }
@@ -32,8 +41,8 @@ angular.module('app', [
     })
 
     .state('signupname', {
-      url: "/signup",
-      templateUrl: "components/signup/signupname.html",
+      url: '/signup',
+      templateUrl: 'components/signup/signupname.html',
       controller: 'SignUpController',
       resolve: {
         user: function(AccountService) {
@@ -42,10 +51,27 @@ angular.module('app', [
       }
     })
 
+    // confirm account
+    .state('confirmaccount', {
+      url: "/confirmaccount",
+      templateUrl: "components/confirm_account/confirmaccount.html",
+      controller: 'ConfirmAccountController'
+    })
+
     // new thread
     .state('newthreadgetready', {
-      url: "/getready",
-      templateUrl: "components/new_thread/getready.html",
+      url: '/getready',
+      templateUrl: 'components/new_thread/getready.html',
+      controller: 'NewThreadController',
+      resolve: {
+        friends: function() { return [] }
+      }
+    })
+
+    // reply thread
+    .state('replyphoto', {
+      url: '/getready/:recipientId',
+      templateUrl: 'components/new_thread/getready.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function() { return [] }
@@ -53,8 +79,8 @@ angular.module('app', [
     })
 
     .state('newthreadselect', {
-      url: "/selectfriend",
-      templateUrl: "components/new_thread/selectfriend.html",
+      url: '/selectfriend',
+      templateUrl: 'components/new_thread/selectfriend.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function(FriendsService) {
@@ -64,20 +90,20 @@ angular.module('app', [
     })
 
     .state('newthreadconfirm', {
-      url: "/confirm",
-      templateUrl: "components/new_thread/confirm.html",
+      url: '/confirm/:friendId',
+      templateUrl: 'components/new_thread/confirm.html',
       controller: 'NewThreadController',
       resolve: {
         friends: function(FriendsService) {  // friends is only one friend in this case
-          return FriendsService.getSelected();
+          return FriendsService.getSelected(); // need to refactor to get friend using ID.
         }
       }
     })
 
     // thread
     .state('thread', {
-      url: "/thread",
-      templateUrl: "components/thread/thread.html",
+      url: '/thread',
+      templateUrl: 'components/thread/thread.html',
       controller: 'ThreadController',
       resolve: {
         thread: function(ThreadsService) {
@@ -88,17 +114,17 @@ angular.module('app', [
 
     //Sidebar Child Views
     .state('menu', {
-      url: "/",
+      url: '/',
       abstract: true,
-      templateUrl: "components/menu/menu.html",
+      templateUrl: 'components/menu/menu.html',
       controller: 'MenuController'
     })
 
     .state('menu.status', {
-      url: "status",
+      url: 'status',
       views: {
-        'menuContent' :{
-          templateUrl: "components/status/status.html",
+        'menuContent': {
+          templateUrl: 'components/status/status.html',
           controller: 'StatusController'
         }
       },
@@ -110,7 +136,7 @@ angular.module('app', [
     })
 
   // Default route
-  $urlRouterProvider.otherwise('/signup');
+  $urlRouterProvider.otherwise('/startup');
 })
 
 .run(function($ionicPlatform, Device) {
