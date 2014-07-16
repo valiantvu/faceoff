@@ -1,7 +1,16 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
-  var user = {status: 'pending'};
+  
+  // Some fake testing data
+  var dummyUsers = [
+    { id: 0, status: 'fresh', UUID: '1234' },
+    { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', UUID: '2345', phone: 1112223333 },
+    { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', UUID: '3456', phone: 2223334444 },
+    { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
+  ];
+
+  var user = dummyUsers[3];
   // if no user in local storage create one now, add uuid
   // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
 
@@ -10,7 +19,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       user = user;
     },
     searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search  { id: 0, first: 'Tim', last: 'McGruff' }; //
+      var user = FriendsService.all()[0]; // perform search
       return user;
     },
     logContacts: function() {
@@ -24,7 +33,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     },
     authAndRoute: function() {
       if (user.status === 'fresh') {
-        $state.go($signupphone);
+        $state.go('signupphone');
       } else if (user.status === 'pending') {
         // update from server now, THEN check again:
           if (user.status === 'confirmed') {
