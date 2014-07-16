@@ -29,10 +29,10 @@ angular.module('services', ['ngCordova'])
     id: 4, first: 'Dave', last: 'G-W', phone: '5552221111'
   }
   var threads = [
-    { id: 0, first: 'Scruff', last: 'McGruff' },
-    { id: 1, first: 'G.I.', last: 'Joe' },
-    { id: 2, first: 'Miss', last: 'Frizzle' },
-    { id: 3, first: 'Ash', last: 'Ketchum'  }
+    { id: 0, first: 'Scruff', last: 'McGruff', new: true, photos: ['img/1.jpg', 'img/9.jpg', 'img/5.jpg', 'img/10.jpg'] },
+    { id: 1, first: 'G.I.', last: 'Joe', new: false, photos: ['img/10.jpg', 'img/4.jpg', 'img/6.jpg', 'img/7.jpg'] },
+    { id: 2, first: 'Miss', last: 'Frizzle', new: true, photos: ['img/3.jpg', 'img/8.jpg', 'img/12.jpg', 'img/1.jpg'] },
+    { id: 3, first: 'Ash', last: 'Ketchum', new: false, photos: ['img/5.jpg', 'img/9.jpg', 'img/11.jpg', 'img/2.jpg'] }
   ];
 
   var selectedThread = { first: 'Empty at First'};
