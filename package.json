@@ -41,11 +41,9 @@
     "gulp-rename": "^1.2.0",
     "q": "^1.0.1",
     "busboy": "^0.2.8",
-    "aws-sdk": "^2.0.8"
-=======
+    "aws-sdk": "^2.0.8",
     "static-favicon": "~1.0.1"
->>>>>>> 8b989b35731c50bad1e475e4d148913bfa36b34b
->>>>>>> 09e893abc59d9e987222370e2501450958295e01
+
   },
   "devDependencies": {
     "connect-livereload": "^0.4.0"
