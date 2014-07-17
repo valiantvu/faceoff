@@ -1,37 +1,10 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
+.factory('AccountService', ['$state', function($state) {
   
-  // Some fake testing data
-  var dummyUsers = [
-    { id: 0, status: 'fresh', UUID: '1234' },
-    { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', UUID: '2345', phone: 1112223333 },
-    { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', UUID: '3456', phone: 2223334444 },
-    { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
-  ];
-
-  var user = dummyUsers[0];
-  // if no user in local storage create one now, add uuid
-  // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
-
   return {
-    updateUser: function(user) {
-      user = user;
-    },
-    searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search
-      return user;
-    },
-    logContacts: function() {
-      console.log("LOGGING");
-      $cordovaContacts.find({fields: ['id', 'displayName']}).then(function(contacts) {
-        console.log("SUCCESS ", contacts);
-      }, function(err) {
-        console.log("ERROR ", err);
-      });
-      console.log("ASYNC BABY");
-    },
     authAndRoute: function() {
+      var user = JSON.parse(window.localStorage.getItem('deviceUser'));
       // we assume user is from local storage
       if (user.status === 'fresh') {
         $state.go('signupphone');
@@ -47,6 +20,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       }
     }
   }
+
 }])
 
 .factory('ThreadsService', function() {
@@ -103,16 +77,50 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('Contacts', ['$q', function($q) {
 
-  var logEach = function(contacts) {
-    for(var i = 0; i < contacts.length; i++) {
-      console.log(contacts[i].name.givenName);
-      console.log(contacts[i].name.familyName);
-      if (contacts[i].phoneNumbers) {
-        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
-          console.log(contacts[i].phoneNumbers[j].value);
+  // allWithPhone
+
+  // userMatching(phone)
+
+  var contactsWithPhone = function(contacts) {
+    var friends = [];
+
+    var concisePhone = function(phone) {
+      // +1 (970) 618-7050  becomes  9706187050
+      // remove '+1' '(' ')' '-' '.' ' '  LAST CHARACTER IS NOT AN EMPTY SPACE
+      phone = phone.replace(/[' ')(\- ]/g, '');
+      phone = phone.replace(/\+1/g, '');
+      // don't allow 1 at front of number
+      if (phone.slice(0, 1) === '1') {
+        phone = phone.slice(1);
+      }
+      return phone;
+    };
+
+    var bestPhone = function(phones) {
+      var best = phones[0].value;
+      for (var i = 0; i < phones.length; i++){
+        if (phones[i].type === 'mobile') {
+          best = phones[i].value;
         }
       }
+      return best;
+    };
+
+    for(var i = 0; i < contacts.length; i++) {
+      if (contacts[i].phoneNumbers) {
+        var friend = {};
+        friend.first = contacts[i].name.givenName;
+        friend.last = contacts[i].name.familyName;
+        friend.phone = concisePhone(bestPhone(contacts[i].phoneNumbers));
+        friends.push(friend);
+      }
     }
+
+    // return friends;
+    for (var i = 0; i < friends.length; i++){
+      console.log(JSON.stringify(friends[i]));
+    }
+
   };
 
   return {
@@ -137,8 +145,8 @@ angular.module('services', ['ngCordova', 'ionic'])
       var fields = ['id', 'displayName'];
       var options = { multiple: true };
       navigator.contacts.find(fields, function(contacts) {
-        console.log("Received Contacts");
-        console.log("Success ", logEach(contacts));//JSON.stringify(contacts));
+        console.log("Success");
+        console.log(contactsWithPhone(contacts));
       }, function(err) {
         console.log(err);
       }, options);
@@ -189,17 +197,110 @@ angular.module('services', ['ngCordova', 'ionic'])
   }
 }])
 
-// service to make device information available at any time
+// Custom service to make device information available at any time
+// and expose device type
 .factory('Device', function() {
-  var device;
+  var device = {};
 
   return {
     // available: model, platform, uuid, version
     get: function(key) {
+      return device;
+    },
+    getItem: function(key) {
       return device[key];
     },
     set: function(obj) {
       device = obj;
+    },
+    setItem: function(key, value) {
+      device[key] = value;
+    },
+    isPhone: function() {
+      return device.type === 'phone';
+    },
+    user: function(obj) {
+      if (obj) {
+        window.localStorage.setItem('deviceUser', JSON.stringify(obj));
+      } else {
+        return JSON.parse(window.localStorage.getItem('deviceUser'));
+      }
     }
   }
-});
+})
+
+// Workaround attempt for sending multipart form data. Currently not used.
+.factory('formDataObject', function() {
+  return function(data) {
+    var fd = new FormData();
+    angular.forEach(data, function(value, key) {
+      fd.append(key, value);
+    });
+    return fd;
+  };
+})
+
+.factory('API', function($http, formDataObject) {
+  var apiCall = {};
+
+  apiCall.getAllUsers = function() {
+    return $http.get('http://localhost:9000/api/users');
+  };
+
+  apiCall.newThread = function() {
+    return $http({
+      url: 'http://localhost:9000/api/threads',
+      method: 'POST',
+      data: {
+        participants: [1002003000, 1112223333]
+      }
+    });
+  };
+
+  // Does not work for multipart forms.
+  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
+    return $http({
+      url: 'http://localhost:9000/api/photos',
+      method: 'POST',
+      data: {
+        threadId: threadId,
+        owner: ownerId,
+        url: photoURI
+      }
+      // headers: {
+      //   'Content-Type': 'multipart/form-data'
+      // },
+      // transformRequest: formDataObject
+    });
+  };
+
+  apiCall.getUser = function(userId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/' + userId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThread = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThreadData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/all/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getAllThreadsData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  return apiCall;
+})

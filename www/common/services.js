@@ -81,16 +81,46 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   // userMatching(phone)
 
-  var logEach = function(contacts) {
-    for(var i = 0; i < contacts.length; i++) {
-      console.log(contacts[i].name.givenName);
-      console.log(contacts[i].name.familyName);
-      if (contacts[i].phoneNumbers) {
-        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
-          console.log(contacts[i].phoneNumbers[j].value);
+  var contactsWithPhone = function(contacts) {
+    var friends = [];
+
+    var concisePhone = function(phone) {
+      // +1 (970) 618-7050  becomes  9706187050
+      // remove '+1' '(' ')' '-' '.' ' '  LAST CHARACTER IS NOT AN EMPTY SPACE
+      phone = phone.replace(/[' ')(\- ]/g, '');
+      phone = phone.replace(/\+1/g, '');
+      // don't allow 1 at front of number
+      if (phone.slice(0, 1) === '1') {
+        phone = phone.slice(1);
+      }
+      return phone;
+    };
+
+    var bestPhone = function(phones) {
+      var best = phones[0].value;
+      for (var i = 0; i < phones.length; i++){
+        if (phones[i].type === 'mobile') {
+          best = phones[i].value;
         }
       }
+      return best;
+    };
+
+    for(var i = 0; i < contacts.length; i++) {
+      if (contacts[i].phoneNumbers) {
+        var friend = {};
+        friend.first = contacts[i].name.givenName;
+        friend.last = contacts[i].name.familyName;
+        friend.phone = concisePhone(bestPhone(contacts[i].phoneNumbers));
+        friends.push(friend);
+      }
     }
+
+    // return friends;
+    for (var i = 0; i < friends.length; i++){
+      console.log(JSON.stringify(friends[i]));
+    }
+
   };
 
   return {
@@ -115,8 +145,8 @@ angular.module('services', ['ngCordova', 'ionic'])
       var fields = ['id', 'displayName'];
       var options = { multiple: true };
       navigator.contacts.find(fields, function(contacts) {
-        console.log("Received Contacts");
-        console.log("Success ", logEach(contacts));//JSON.stringify(contacts));
+        console.log("Success");
+        console.log(contactsWithPhone(contacts));
       }, function(err) {
         console.log(err);
       }, options);
