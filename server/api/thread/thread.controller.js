@@ -174,6 +174,21 @@ exports.show = function (req, res, next) {
 };
 
 /**
+ * Get a single thread and populate all participant and photo data.
+ */
+exports.showAllData = function (req, res, next) {
+  var options = [{
+    path: 'participants', model: 'User'}, {
+    path: 'photos', model: 'Photo'
+  }];
+  Thread.findById(req.params.id).populate(options).exec(function (err, threadData) {
+    if (err) return next(err);
+    if (!threadData) return res.send(401);
+    res.json(threadData);
+  });
+};
+
+/**
  * Deletes a thread
  * restriction: 'admin'
  */

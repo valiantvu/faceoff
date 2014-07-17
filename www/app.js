@@ -102,14 +102,14 @@ angular.module('app', [
 
     // thread
     .state('thread', {
-      url: '/thread',
+      url: '/thread/:threadId',
       templateUrl: 'components/thread/thread.html',
-      controller: 'ThreadController',
-      resolve: {
-        thread: function(ThreadsService) {
-          return ThreadsService.getSelected();
-        }
-      }
+      controller: 'ThreadController'
+      // resolve: {
+      //   thread: function(ThreadsService) {
+      //     return ThreadsService.getSelected();
+      //   }
+      // }
     })
 
     //Sidebar Child Views
