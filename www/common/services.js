@@ -213,16 +213,24 @@ angular.module('services', ['ngCordova', 'ionic'])
 .factory('API', function($http, formDataObject) {
   var apiCall = {};
 
+  apiCall.newUser = function(userData) {
+    return $http({
+      url: 'http://localhost:9000/api/users',
+      method: 'POST',
+      data: userData
+    });
+  }
+
   apiCall.getAllUsers = function() {
     return $http.get('http://localhost:9000/api/users');
   };
 
-  apiCall.newThread = function() {
+  apiCall.newThread = function(participants) {
     return $http({
       url: 'http://localhost:9000/api/threads',
       method: 'POST',
       data: {
-        participants: [1002003000, 1112223333]
+        participants: participants // participants should be an array of phone numbers: Ex [1002003000, 1112223333]
       }
     });
   };
@@ -283,7 +291,7 @@ angular.module('services', ['ngCordova', 'ionic'])
         console.log(error);
       });
 
-    API.newThread()
+    API.newThread([1112223334,1234567890])
       .success(function(newThread) {
         console.log(newThread);
         var threadId = newThread.data._id;
