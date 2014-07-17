@@ -56,9 +56,14 @@ exports.showAllThreadsData = function (req, res, next) {
   User.findById(userId)
     .populate('threads')
     .exec(function (err, userThreads) {
-      if (err) return next(err);
+      if (err) return err;
       if (!userThreads) return res.send(401);
-      User.populate(userThreads, {path: 'threads.photos', model: 'Photo'}, function (err, userThreadsPhotos) {
+      var options = [{
+        path: 'threads.participants', model: 'User'}, {
+        path: 'threads.photos', model: 'Photo'
+      }];
+      User.populate(userThreads, options, function (err, userThreadsPhotos) {
+        if (err) return err;
         res.json(userThreadsPhotos);
       });
     });
