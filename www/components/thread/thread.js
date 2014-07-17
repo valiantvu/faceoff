@@ -2,7 +2,7 @@ angular.module('faceoff.thread', [
 	'ionic'
 	])
 
-.controller('ThreadController', function($scope, Camera, $timeout, $location, $state, $stateParams, API) {
+.controller('ThreadController', function($scope, $state, $stateParams, API) {
   var init = function() {
     // Get all the thread data needed to generate view.
     API.getThreadData($stateParams.threadId)
@@ -17,6 +17,6 @@ angular.module('faceoff.thread', [
   init();
 
   $scope.replyPhoto = function(recipient) {
-    $state.go('replyphoto', {recipientId: recipient.id});
+    $state.go('replyphoto', {recipientId: recipient._id});
   };
 });
