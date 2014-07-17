@@ -8,7 +8,7 @@
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Your Phone Number: </span>
-          <input type="text" ng-model="user.phone">
+          <input type="tel" ng-model="user.phone" autofocus="true">
         </label>
         <label class="item">
           <button class="button button-block button-positive" type="submit">Next</button>
@@ -17,7 +17,7 @@
     </form>
 
     <label class="item">
-      <button class="button button-block button-positive" ng-click="logContacts()">Test</button>
+      <button class="button button-block button-positive" ng-click="test()">Test</button>
     </label>
 
   </ion-content>

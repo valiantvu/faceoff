@@ -32,6 +32,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       console.log("ASYNC BABY");
     },
     authAndRoute: function() {
+      // we assume user is from local storage
       if (user.status === 'fresh') {
         $state.go('signupphone');
       } else if (user.status === 'pending') {
@@ -102,15 +103,31 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('Contacts', ['$q', function($q) {
 
+  // allWithPhone
+
+  // userMatching(phone)
+
+  var logEach = function(contacts) {
+    for(var i = 0; i < contacts.length; i++) {
+      console.log(contacts[i].name.givenName);
+      console.log(contacts[i].name.familyName);
+      if (contacts[i].phoneNumbers) {
+        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
+          console.log(contacts[i].phoneNumbers[j].value);
+        }
+      }
+    }
+  };
+
   return {
     // with promises
     find: function() {
       console.log("Promisified Contacts");
       var q = $q.defer();
 
-      var options = ['id', 'displayName'];
+      var fields = ['id', 'displayName'];
 
-      navigator.contacts.find(function(contacts) {
+      navigator.contacts.find(fields, function(contacts) {
         q.resolve(contacts);
       }, function(err) {
         q.reject(err);
@@ -121,11 +138,14 @@ angular.module('services', ['ngCordova', 'ionic'])
     // without promises
     log: function() {
       console.log("Basic Contacts");
-      navigator.contacts.find(['id', 'displayName'], function(contacts) {
-        console.log("Success ", contacts);
+      var fields = ['id', 'displayName'];
+      var options = { multiple: true };
+      navigator.contacts.find(fields, function(contacts) {
+        console.log("Received Contacts");
+        console.log("Success ", logEach(contacts));//JSON.stringify(contacts));
       }, function(err) {
         console.log(err);
-      });
+      }, options);
     }
   }
 }])
@@ -173,17 +193,27 @@ angular.module('services', ['ngCordova', 'ionic'])
   }
 }])
 
-// service to make device information available at any time
+// Custom service to make device information available at any time
+// and expose device type
 .factory('Device', function() {
-  var device;
+  var device = {};
 
   return {
     // available: model, platform, uuid, version
     get: function(key) {
+      return device;
+    },
+    getItem: function(key) {
       return device[key];
     },
     set: function(obj) {
       device = obj;
+    },
+    setItem: function(key, value) {
+      device[key] = value;
+    },
+    isPhone: function() {
+      return device.type === 'phone';
     }
   }
 })
