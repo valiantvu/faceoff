@@ -86,7 +86,8 @@ var preCreate = function(participants){
         var newUser = new User({
           "first": "Pending",
           "last": "Pending",
-          "phone": participant
+          "phone": participant,
+          "status": "pending"
         });
         newUser.save(function(err, user){
           // bubble up errors
