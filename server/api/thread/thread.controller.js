@@ -127,15 +127,8 @@ exports.create = function (req, res, next) {
     var newThread = new Thread({participants: req.body.participants});
     newThread.save(function(err, thread) {
       if (err) return validationError(res, err);
-      var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
-      newPhoto.save(function(err, photo) {
-        if (err) return validationError(res, err);
-        thread.photos.push(photo.id);
-        thread.save(function(err, updatedThread) {
-          if (err) return validationError(res, err);
-          res.json({ data: updatedThread });
-        });
-      });
+      //TODO: add this thread to each participants thread array
+      res.json({ data: thread });
     });
   }, function(err){
     console.log(err);
@@ -145,6 +138,7 @@ exports.create = function (req, res, next) {
 };
 
 // Expects same parameters as + a threadID.
+// Not used here.  Using photo.create in photo api
 exports.addPhoto = function(req, res) {
   var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
   newPhoto.save(function(err, photo) {
