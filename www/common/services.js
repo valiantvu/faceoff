@@ -233,7 +233,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     });
   };
 
-  apiCall.getAllThreads = function(userId) {
+  apiCall.getUser = function(userId) {
     return $http({
       url: 'http://localhost:9000/api/users/' + userId,
       method: 'GET'
@@ -243,6 +243,13 @@ angular.module('services', ['ngCordova', 'ionic'])
   apiCall.getThread = function(threadId) {
     return $http({
       url: 'http://localhost:9000/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getAllThreadsData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/threads/' + threadId,
       method: 'GET'
     });
   };
