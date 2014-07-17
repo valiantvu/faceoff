@@ -11,6 +11,11 @@ angular.module('faceoff.signup', [
 		// validate phone number format
 		var PHONE_REGEXP = /^[(]{0,1}[0-9]{3}[)\.\- ]{0,1}[0-9]{3}[\.\- ]{0,1}[0-9]{4}$/;
 		if (PHONE_REGEXP.test($scope.user.phone)) {
+			// update user in local storage
+			var deviceUser = JSON.parse(window.localStorage.getItem('deviceUser'));
+			deviceUser.phone = $scope.user.phone;
+			window.localStorage.setItem('deviceUser', JSON.stringify(deviceUser));
+			// for now, 
 			AccountService.updateUser($scope.user);
 			$state.go('signupname');
 		} else {
@@ -22,11 +27,11 @@ angular.module('faceoff.signup', [
 	$scope.completeSignUp = function() {
 
 		if (user.first.length > 0 && user.last.length > 0) {
-			// get UUID of phone, update signupData
+			// update local user
 
 			// post signup data to server
 				// success
-					// write the signupData to local storage
+					// update local storage
 					// go to cameranew
 				// error
 					// show error in modal
@@ -38,19 +43,22 @@ angular.module('faceoff.signup', [
 
 	};
 
-	$scope.logContacts = function() {
+	$scope.test = function() {
+		console.log("Platform ", JSON.stringify(navigator.userAgent));
+		console.log("Platform ", navigator.userAgent);
+
+		// testing local storage
+		var deviceUser = JSON.parse(window.localStorage.getItem('deviceUser'));
+		console.log('Device User Status: ', deviceUser.status);
+		console.log('Device User UUID: ', deviceUser.uuid);
+		console.log('Device User TYPE: ', Device.isPhone());
+
+		// testing contacts
 		// Contacts.find().then(function(contacts) {
-		// 	console.log("CONTACTS ", contacts);
+		// 	console.log("CONTACTS ", JSON.parse(contacts));
 		// }, function(err) {
 		// 	console.log(err);
 		// });
-
-		// testing
-		console.log('XCODE');
-		var localUser = JSON.parse(localStorage.getItem('user'));
-		console.log('Local User uuid is ', localUser.uuid);
-		console.log('Test is ', localUser.test);
-
 		Contacts.log();
 	};
 
@@ -64,7 +72,7 @@ angular.module('faceoff.signup', [
    });
  };
 
- // shor alert for invalid names
+ // show alert for invalid names
  $scope.invalidName = function() {
    $ionicPopup.alert({
      title: 'Name Required',

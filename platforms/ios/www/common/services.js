@@ -103,15 +103,27 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 .factory('Contacts', ['$q', function($q) {
 
+  var logEach = function(contacts) {
+    for(var i = 0; i < contacts.length; i++) {
+      console.log(contacts[i].name.givenName);
+      console.log(contacts[i].name.familyName);
+      if (contacts[i].phoneNumbers) {
+        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
+          console.log(contacts[i].phoneNumbers[j].value);
+        }
+      }
+    }
+  };
+
   return {
     // with promises
     find: function() {
       console.log("Promisified Contacts");
       var q = $q.defer();
 
-      var options = ['id', 'displayName'];
+      var fields = ['id', 'displayName'];
 
-      navigator.contacts.find(function(contacts) {
+      navigator.contacts.find(fields, function(contacts) {
         q.resolve(contacts);
       }, function(err) {
         q.reject(err);
@@ -122,11 +134,14 @@ angular.module('services', ['ngCordova', 'ionic'])
     // without promises
     log: function() {
       console.log("Basic Contacts");
-      navigator.contacts.find(['id', 'displayName'], function(contacts) {
-        console.log("Success ", contacts);
+      var fields = ['id', 'displayName'];
+      var options = { multiple: true };
+      navigator.contacts.find(fields, function(contacts) {
+        console.log("Received Contacts");
+        console.log("Success ", logEach(contacts));//JSON.stringify(contacts));
       }, function(err) {
         console.log(err);
-      });
+      }, options);
     }
   }
 }])
