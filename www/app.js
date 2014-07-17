@@ -34,21 +34,13 @@ angular.module('app', [
     .state('signupphone', {
       url: '/signup',
       templateUrl: 'components/signup/signupphone.html',
-      controller: 'SignUpController',
-      resolve: {
-        user: function(AccountService) { return {}; }
-      }
+      controller: 'SignUpController'
     })
 
     .state('signupname', {
       url: '/signup',
       templateUrl: 'components/signup/signupname.html',
-      controller: 'SignUpController',
-      resolve: {
-        user: function(AccountService) {
-          return AccountService.searchContacts();
-        }
-      }
+      controller: 'SignUpController'
     })
 
     // confirm account
@@ -158,7 +150,7 @@ angular.module('app', [
     // if no device data is available, we can assume we are in the browser
     if (ionic.Platform.device().uuid === undefined) {
       // so we manually specify a deviceUser profile (simulation mode)
-      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[1]));
+      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[0]));
       Device.setItem('type', 'internetdevice');
     }
     // otherwise if a user doesn't yet exist in the phone's local storage, we create one

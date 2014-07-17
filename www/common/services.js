@@ -1,37 +1,10 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
+.factory('AccountService', ['$state', function($state) {
   
-  // Some fake testing data
-  var dummyUsers = [
-    { id: 0, status: 'fresh', UUID: '1234' },
-    { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', UUID: '2345', phone: 1112223333 },
-    { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', UUID: '3456', phone: 2223334444 },
-    { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
-  ];
-
-  var user = dummyUsers[0];
-  // if no user in local storage create one now, add uuid
-  // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
-
   return {
-    updateUser: function(user) {
-      user = user;
-    },
-    searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search
-      return user;
-    },
-    logContacts: function() {
-      console.log("LOGGING");
-      $cordovaContacts.find({fields: ['id', 'displayName']}).then(function(contacts) {
-        console.log("SUCCESS ", contacts);
-      }, function(err) {
-        console.log("ERROR ", err);
-      });
-      console.log("ASYNC BABY");
-    },
     authAndRoute: function() {
+      var user = JSON.parse(window.localStorage.getItem('deviceUser'));
       // we assume user is from local storage
       if (user.status === 'fresh') {
         $state.go('signupphone');
@@ -47,6 +20,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       }
     }
   }
+
 }])
 
 .factory('ThreadsService', function() {
@@ -214,6 +188,13 @@ angular.module('services', ['ngCordova', 'ionic'])
     },
     isPhone: function() {
       return device.type === 'phone';
+    },
+    user: function(obj) {
+      if (obj) {
+        window.localStorage.setItem('deviceUser', JSON.stringify(obj));
+      } else {
+        return JSON.parse(window.localStorage.getItem('deviceUser'));
+      }
     }
   }
 })
