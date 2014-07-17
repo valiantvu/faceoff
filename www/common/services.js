@@ -261,5 +261,71 @@ angular.module('services', ['ngCordova', 'ionic'])
     });
   };
 
+  /************************
+   *** SAMPLE API Calls ***
+   ************************
+    API.getAllUsers()
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.newThread()
+      .success(function(newThread) {
+        console.log(newThread);
+        var threadId = newThread.data._id;
+        var ownerId = newThread.data.participants[0];
+        // Remove this line when we have real photos to send.
+        Camera.getRandomPicture().then(function(image) {
+          API.newPhoto(threadId, ownerId, image)
+            .success(function(data) {
+              console.log(data);
+            })
+            .error(function(error) {
+              console.log(error);
+            });
+        })
+      })
+      .error(function(error) {
+        console.log('error');
+        console.log(error);
+      })
+
+    newPhoto only test.
+    API.newPhoto("53c741465a44899857fb64a8", "53c741465a44899857fb64a6")
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      })
+    
+    API.getThread('53c741465a44899857fb64a8')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.getUser('53c741465a44899857fb64a6')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.getAllThreadsData('53c7794489f357de7dbf6186')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+  */  
+
   return apiCall;
 })
