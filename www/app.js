@@ -139,13 +139,33 @@ angular.module('app', [
   $urlRouterProvider.otherwise('/startup');
 })
 
+// Run Time Operations (startup)
 .run(function($ionicPlatform, Device) {
   $ionicPlatform.ready(function() {
-    if(window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-    // Grab and set all device details (ie uuid)
+    console.log('Platform Ready');
+
+    // Grab and set all device details (model, platform, uuid, version) if available
     Device.set(ionic.Platform.device());
+    Device.setItem('type', 'phone');
+
+    var simulationUsers = [
+      { id: 0, status: 'fresh', uuid: '1234' },
+      { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', uuid: '2345', phone: 1112223333 },
+      { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', uuid: '3456', phone: 2223334444 },
+      { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', uuid: '4567', phone: 3334445555 }
+    ];
+
+    // if no device data is available, we can assume we are in the browser
+    if (ionic.Platform.device().uuid === undefined) {
+      // so we manually specify a deviceUser profile (simulation mode)
+      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[1]));
+      Device.setItem('type', 'internetdevice');
+    }
+    // otherwise if a user doesn't yet exist in the phone's local storage, we create one
+    else if (window.localStorage.getItem('deviceUser') === null) {
+      var deviceUser = { status: 'fresh', uuid: Device.get('uuid') };
+      window.localStorage.setItem('deviceUser', JSON.stringify(deviceUser));
+    }
+    
   });
 });

@@ -3,6 +3,10 @@
     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
   </ion-nav-buttons>
 
+  <ion-nav-buttons side="right">
+    <button class="button button-icon icon ion-camera" ui-sref="newthreadgetready"></button>
+  </ion-nav-buttons>
+
   <ion-content class="has-header" padding="true">
 
 	  <!-- <div class="list">
@@ -14,7 +18,13 @@
 
     <ion-list>
       <ion-item ng-repeat="thread in threads | orderBy: '-id' " ng-click="selectThread(thread)">
-        {{thread.first}} {{thread.last}} {{thread.id}}
+        {{thread.first}} {{thread.last}} {{thread.new}}
+        <div class="row">
+          <div ng-repeat="photo in thread.photos | limitTo: -3" ng-click="selectThread(thread)" class="col">
+            <img ng-src="{{photo}}" style="width: 100%">
+          </div>
+          <div class="col"></div>
+        </div>
       </ion-item>
     </ion-list>
 
