@@ -217,14 +217,14 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 
   // Does not work for multipart forms.
-  apiCall.newPhoto = function(threadId, ownerId) {
+  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
     return $http({
       url: 'http://localhost:9000/api/photos',
       method: 'POST',
       data: {
         threadId: threadId,
         owner: ownerId,
-        url: 'http://blog.jimdo.com/wp-content/uploads/2014/01/tree-247122.jpg'
+        url: photoURI
       }
       // headers: {
       //   'Content-Type': 'multipart/form-data'
@@ -243,6 +243,13 @@ angular.module('services', ['ngCordova', 'ionic'])
   apiCall.getThread = function(threadId) {
     return $http({
       url: 'http://localhost:9000/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThreadData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/all/' + threadId,
       method: 'GET'
     });
   };
