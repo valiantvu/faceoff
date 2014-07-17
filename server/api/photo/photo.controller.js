@@ -36,67 +36,83 @@ exports.create = function (req, res, next) {
 
   var fstream;
   var photoData = {};
-  var busboy = new Busboy({ headers: req.headers });
-  //initiate form processing
-  req.pipe(busboy);
 
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-      //save file
-      fstream = fs.createWriteStream('./tempImages/' + filename);
-      file.pipe(fstream);
-      fstream.on('close', function () {    
-            console.log("Saving Finished of " + filename);              
-      });
-      file.on('data', function(data) {
-        console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
-      });
-      file.on('end', function(data) {
-        //add data to the storage object above
-        photoData[fieldname]=filename;
-        console.log('File [' + fieldname + '] Finished');
-      });
-    });
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
-      //add owner userId to the storage object above
-      photoData[fieldname]=val;
-      console.log('Field [' + fieldname + ']: value: ' + inspect(val));
-    });
-    busboy.on('finish', function() {
-      console.log('Done parsing form!');
-      console.log('photo data', photoData);
+  if (req.headers['content-type'] === 'multipart/form-data'){
+    var busboy = new Busboy({ headers: req.headers });
+    //initiate form processing
+    req.pipe(busboy);
 
-      //check to see we have the required photo model data from the post
-      if (photoData.owner && photoData.photo && photoData.threadId){
+      busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+        //save file
+        fstream = fs.createWriteStream('./tempImages/' + filename);
+        file.pipe(fstream);
+        fstream.on('close', function () {    
+              console.log("Saving Finished of " + filename);              
+        });
+        file.on('data', function(data) {
+          console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+        });
+        file.on('end', function(data) {
+          //add data to the storage object above
+          photoData[fieldname]=filename;
+          console.log('File [' + fieldname + '] Finished');
+        });
+      });
+      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        //add owner userId to the storage object above
+        photoData[fieldname]=val;
+        console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+      });
+      busboy.on('finish', function() {
+        console.log('Done parsing form!');
+        console.log('photo data', photoData);
 
-        var newPhoto = new Photo(photoData);
-        newPhoto.save(function(err, photo) {
-          if (err) res.send(validationError(res, err));
-          //hard code for now
-          photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
-          photo.cloudStatus = 'pending';
-          photo.name= photo.id;
-          //set the photo name to the photo object id
-          photo.save(function(err, photo) {
-            if (err) return validationError(res, err);
-            exports.uploadToCloud(photo, photoData.photo, photo.id);
-            res.json({ data: photo });
-          });
-          //add this photo to the thread
-          Thread.findById(photoData.threadId, function(err, thread) {
-            if (err) return validationError(res, err);
-            thread.photos.push(photo.id);
-            thread.save(function(err, updatedThread) {
-            if (err) return validationError(res, err);
-            //res.json({ data: photo });
-            console.log('photo added to thread', updatedThread);
+        //check to see we have the required photo model data from the post
+        if (photoData.owner && photoData.photo && photoData.threadId){
+
+          var newPhoto = new Photo(photoData);
+          newPhoto.save(function(err, photo) {
+            if (err) res.send(validationError(res, err));
+            //hard code for now
+            photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
+            photo.cloudStatus = 'pending';
+            photo.name= photo.id;
+            //set the photo name to the photo object id
+            photo.save(function(err, photo) {
+              if (err) return validationError(res, err);
+              exports.uploadToCloud(photo, photoData.photo, photo.id);
+              res.json({ data: photo });
+            });
+            //add this photo to the thread
+            Thread.findById(photoData.threadId, function(err, thread) {
+              if (err) return validationError(res, err);
+              thread.photos.push(photo.id);
+              thread.save(function(err, updatedThread) {
+              if (err) return validationError(res, err);
+              //res.json({ data: photo });
+              console.log('photo added to thread', updatedThread);
+              });
             });
           });
+        } else {
+          res.send('we need a valid userId for the owner and photo data');
+        }
+      });
+  }
+  else {
+    var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
+    newPhoto.save(function(err, photo) {
+      Thread.findById(req.body.threadId, function(err, thread) {
+        if (err) return validationError(res, err);
+        thread.photos.push(photo.id);
+        thread.save(function(err, updatedThread) {
+          if (err) return validationError(res, err);
+          res.json({ data: photo });
         });
-      } else {
-        res.send('we need a valid userId for the owner and photo data');
-      }
-    });
+      });
+  });
+  }
 };
 
 /**
