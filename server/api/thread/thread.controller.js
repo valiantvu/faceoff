@@ -36,7 +36,6 @@ var sendSms = function(name, phoneNumber){
     to: "+1" + phoneNumber,
     from: "+16467592566"
   }, function(err, responseData){
-      console.log(err);
       if(err){
         console.log(err);
       }else{
@@ -77,10 +76,13 @@ var preCreate = function(participants){
     var deferred = Q.defer();
     User.findOne({"phone": participant}, function(err, user){
       //bubble up errors
-      if(err) deferred.reject(err);
-      if(user){
-        deferred.resolve(user._id);
-      }else{
+      if (err) {
+        deferred.reject(err);
+      }
+      if (user) {
+        deferred.resolve(user);
+      }
+      else {
         var newUser = new User({
           "first": "Pending",
           "last": "Pending",
@@ -91,11 +93,10 @@ var preCreate = function(participants){
           if(err) deferred.reject(err);
           // send text to new user with twilio
           sendSmsTo.push(participant);
-          deferred.resolve(newUser._id);
+          deferred.resolve(user);
         });
       }
     })
-
     promiseArray.push(deferred.promise);
   })
   return promiseArray;
@@ -113,6 +114,7 @@ exports.create = function (req, res, next) {
   var creatorOfThread = req.body.participants[0];
   var promises = preCreate(req.body.participants);
   Q.all(promises).then(function(result){
+
     // send notification to unregistered users to play a game
     User.findOne({ "phone": creatorOfThread }, function(err, user){
       if(err) console.log(err);
@@ -123,11 +125,16 @@ exports.create = function (req, res, next) {
     });
 
     // create thread
-    req.body.participants = result;
-    var newThread = new Thread({participants: req.body.participants});
+    var userParticipants = result;
+    var newThread = new Thread({participants: userParticipants});
     newThread.save(function(err, thread) {
       if (err) return validationError(res, err);
-      //TODO: add this thread to each participants thread array
+      // Add thread to each participants thread array.
+      // We return the thread, so do not need to wait for users to save.
+      userParticipants.forEach(function(participant){
+        participant.threads.push(thread.id);
+        participant.save();
+      });
       res.json({ data: thread });
     });
   }, function(err){
@@ -162,7 +169,7 @@ exports.show = function (req, res, next) {
   Thread.findById(threadId, function (err, thread) {
     if (err) return next(err);
     if (!thread) return res.send(401);
-    res.json(thread.profile);
+    res.json(thread);
   });
 };
 
