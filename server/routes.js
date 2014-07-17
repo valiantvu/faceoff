@@ -7,9 +7,6 @@
 var errors = require('./components/errors');
 
 module.exports = function(app) {
-
-<<<<<<< HEAD
-=======
   // Enable CORS header for all incoming requests
   app.use('/*',function(req,res,next){
       res.header({
@@ -20,7 +17,6 @@ module.exports = function(app) {
       next();
   });
 
->>>>>>> 8b989b35731c50bad1e475e4d148913bfa36b34b
   // Insert routes below
   app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));

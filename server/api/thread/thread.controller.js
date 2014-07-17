@@ -7,6 +7,13 @@ var jwt = require('jsonwebtoken');
 var Photo = require('../photo/photo.model');
 var User = require('../user/user.model');
 var Q = require('q');
+/** Twilio Setup **/
+if(config.env === 'development') { 
+  var TWILIO_CREDS = require('../../config/local.env.js');
+ };
+var accountSid =  process.env.TWILIO_SID || TWILIO_CREDS.TWILIO_SID;
+var authToken = process.env.TWILIO_TOKEN || TWILIO_CREDS.TWILIO_TOKEN;
+var client = require('twilio')(accountSid, authToken);
 
 var validationError = function(res, err) {
   return res.json(422, err);
@@ -23,20 +30,37 @@ exports.index = function(req, res) {
   });
 };
 
+var sendSms = function(name, phoneNumber){
+  client.messages.create({
+    body: name + " says: let's trade faces! http://tradingspaces.herokuapp.com",
+    to: "+1" + phoneNumber,
+    from: "+16467592566"
+  }, function(err, responseData){
+      console.log(err);
+      if(err){
+        console.log(err);
+      }else{
+        console.log(responseData.to); 
+        console.log(responseData.body); 
+      }
+    });
+};
+
 /**
  * Loops through an array of users phone numbers.
  * Replaces a user's phone number with his/her ObjectId if user is registered,
  * otherwise it creates a user object and replaces the user's phone number with
  * the newly created ObjectId
  */
-
+// need access to sendSmsTo in create. possible better way?
+var sendSmsTo = [];
 var preCreate = function(participants){
   //Input: an array of participants phone numbers
   //Output: an array of participants user ids
   //BEGIN
     // set promiseArray to []
-    // loop participant in array
-      // create and empty promise
+    // loop participants in array
+      // create an empty promise
       // lookup phone number
       // if user exists then
         // resolve promise with user id
@@ -48,6 +72,7 @@ var preCreate = function(participants){
     // return promise array
   //END
   var promiseArray = [];
+  var fromPhoneNumber = participants[0];
   participants.forEach(function(participant){
     var deferred = Q.defer();
     User.findOne({"phone": participant}, function(err, user){
@@ -64,6 +89,8 @@ var preCreate = function(participants){
         newUser.save(function(err, user){
           // bubble up errors
           if(err) deferred.reject(err);
+          // send text to new user with twilio
+          sendSmsTo.push(participant);
           deferred.resolve(newUser._id);
         });
       }
@@ -83,8 +110,19 @@ var preCreate = function(participants){
  */
 ///{particpants:{id: 53c3fc714dbca9cb1589e695, id:53c3fc714dbca9cb1589e696}, owner:53c3fc714dbca9cb1589e696, url: http://goo.gl/oUgHgn}
 exports.create = function (req, res, next) {
+  var creatorOfThread = req.body.participants[0];
   var promises = preCreate(req.body.participants);
   Q.all(promises).then(function(result){
+    // send notification to unregistered users to play a game
+    User.findOne({ "phone": creatorOfThread }, function(err, user){
+      if(err) console.log(err);
+      var firstName = user.first;
+      sendSmsTo.forEach(function(phoneNumber){
+        sendSms(firstName, phoneNumber);
+      });
+    });
+
+    // create thread
     req.body.participants = result;
     var newThread = new Thread({participants: req.body.participants});
     newThread.save(function(err, thread) {
