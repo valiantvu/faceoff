@@ -12,6 +12,7 @@ router.delete('/:id', controller.destroy);
 // router.get('/me', auth.isAuthenticated(), controller.me);
 // router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.get('/:id', controller.show);
+router.get('/threads/:id', controller.showAllThreadsData);
 router.post('/', controller.create);
 
 module.exports = router;

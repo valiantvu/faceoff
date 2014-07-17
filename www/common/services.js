@@ -216,4 +216,80 @@ angular.module('services', ['ngCordova', 'ionic'])
       return device.type === 'phone';
     }
   }
-});
+})
+
+// Workaround attempt for sending multipart form data. Currently not used.
+.factory('formDataObject', function() {
+  return function(data) {
+    var fd = new FormData();
+    angular.forEach(data, function(value, key) {
+      fd.append(key, value);
+    });
+    return fd;
+  };
+})
+
+.factory('API', function($http, formDataObject) {
+  var apiCall = {};
+
+  apiCall.getAllUsers = function() {
+    return $http.get('http://localhost:9000/api/users');
+  };
+
+  apiCall.newThread = function() {
+    return $http({
+      url: 'http://localhost:9000/api/threads',
+      method: 'POST',
+      data: {
+        participants: [1002003000, 1112223333]
+      }
+    });
+  };
+
+  // Does not work for multipart forms.
+  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
+    return $http({
+      url: 'http://localhost:9000/api/photos',
+      method: 'POST',
+      data: {
+        threadId: threadId,
+        owner: ownerId,
+        url: photoURI
+      }
+      // headers: {
+      //   'Content-Type': 'multipart/form-data'
+      // },
+      // transformRequest: formDataObject
+    });
+  };
+
+  apiCall.getUser = function(userId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/' + userId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThread = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThreadData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/all/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getAllThreadsData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  return apiCall;
+})

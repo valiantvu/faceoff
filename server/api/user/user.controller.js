@@ -48,6 +48,28 @@ exports.show = function (req, res, next) {
 };
 
 /**
+ * Get a single user's threads
+ * Populates the user, thread and photo with JSON data.
+ */
+exports.showAllThreadsData = function (req, res, next) {
+  var userId = req.params.id;
+  User.findById(userId)
+    .populate('threads')
+    .exec(function (err, userThreads) {
+      if (err) return err;
+      if (!userThreads) return res.send(401);
+      var options = [{
+        path: 'threads.participants', model: 'User'}, {
+        path: 'threads.photos', model: 'Photo'
+      }];
+      User.populate(userThreads, options, function (err, userThreadsPhotos) {
+        if (err) return err;
+        res.json(userThreadsPhotos);
+      });
+    });
+};
+
+/**
  * Deletes a user
  * restriction: 'admin'
  */

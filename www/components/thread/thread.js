@@ -2,26 +2,21 @@ angular.module('faceoff.thread', [
 	'ionic'
 	])
 
-.controller('ThreadController', function($scope, thread, Camera, $timeout, $location, $state) {
-  console.log("THREAD " ,thread)
-	$scope.thread = thread; // current user is the first object in array
-  $scope.photos = [];
-  for (var i = 0; i < 4; i++) {
-    Camera.getRandomPicture().then(function(imageURL) {
-      var random = Math.floor(Math.random() * 1000);
-      var photoObj = {};
-      photoObj.photoURL = imageURL;
-      photoObj.createdAt = new Date(new Date() - random*1000000);
-      photoObj.owner = $scope.thread[random%2]
-      $scope.photos.push(photoObj);
-    })
+.controller('ThreadController', function($scope, Camera, $timeout, $location, $state, $stateParams, API) {
+  var init = function() {
+    // Get all the thread data needed to generate view.
+    API.getThreadData($stateParams.threadId)
+      .success(function(data) {
+        $scope.participants = data.participants;
+        $scope.photos = data.photos;
+      })
+      .error(function(error) {
+        console.log(error);
+      });
   }
+  init();
 
   $scope.replyPhoto = function(recipient) {
     $state.go('replyphoto', {recipientId: recipient.id});
   };
-
-  $timeout(function() {
-    console.log('THREAD PHOTOS: ', $scope.photos);
-  },200);
 });
