@@ -21,10 +21,10 @@ angular.module('faceoff.status', [
 	$scope.selectThread = function(thread) {
     // Mark thread as read before navigating to thread view.
     if ($scope.user.id === thread.creator) {
-      API.creatorRead(thread._id)
+      API.creatorRead(thread._id, true);
     }
     else {
-      API.recipientRead(thread._id)
+      API.recipientRead(thread._id, true);
     }
 		$state.go('thread', {threadId: thread._id});
 	};

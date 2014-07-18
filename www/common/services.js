@@ -294,16 +294,16 @@ angular.module('services', ['ngCordova', 'ionic'])
     });
   };
 
-  apiCall.creatorRead = function(threadId) {
+  apiCall.creatorRead = function(threadId, read) {
     return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/mark-read',
+      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/read/' + read,
       method: 'GET'
     });
   };
 
-  apiCall.recipientRead = function(threadId) {
+  apiCall.recipientRead = function(threadId, read) {
     return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/mark-read',
+      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/read/' + read,
       method: 'GET'
     });
   };

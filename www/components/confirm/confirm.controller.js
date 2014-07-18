@@ -18,7 +18,7 @@ angular.module('faceoff.confirmthread', [
       API.searchForThread($scope.user.id, $scope.friends._id).success(function(foundThread) {
         if (foundThread) {
           // console.log('find',foundThread);
-          createNewPhoto(foundThread._id, $scope.user.id);
+          createNewPhoto(foundThread._id, $scope.user.id, foundThread.creator);
         }
         else {
           createNewThread();
@@ -43,11 +43,21 @@ angular.module('faceoff.confirmthread', [
       })
   }
 
-  var createNewPhoto = function(threadId, userId) {
+  var createNewPhoto = function(threadId, userId, creator) {
     // Remove this line when we have real photos to send.
     Camera.getRandomPicture().then(function(image) {
       API.newPhoto(threadId, userId, image)
         .success(function(data) {
+          if (creator) {
+            if (userId === creator) {
+              console.log("WHHAAT")
+              API.recipientRead(threadId, false);
+            }
+            else {
+              console.log("HUGHHH")
+              API.creatorRead(threadId, false);
+            }
+          }
           $state.go('menu.status');
         })
         .error(function(error) {

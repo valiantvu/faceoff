@@ -203,14 +203,16 @@ exports.findThread = function (req, res, next) {
 
 exports.creatorMarkRead = function (req, res, next) {
   var threadId = req.params.id;
-  Thread.update({_id: threadId}, { $set: { creatorRead: true }}, function(err){
+  var read = req.params.read;
+  Thread.update({_id: threadId}, { $set: { creatorRead: read }}, function(err){
     console.log(err)
   });
 };
 
 exports.recipientMarkRead = function (req, res, next) {
   var threadId = req.params.id;
-  Thread.update({_id: threadId}, { $set: { recipientRead: true }}, function(err){
+  var read = req.params.read;
+  Thread.update({_id: threadId}, { $set: { recipientRead: read }}, function(err){
     console.log(err)
   });
 };
