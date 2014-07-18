@@ -4,8 +4,14 @@
   position: relative;
 }
 .thread-photo {
-  width:100%;
+  width: 100%;
   padding: 0 3%;
+}
+.modal-background {
+  background-color: black;
+}
+.modal-photo {
+  width: 100%;
 }
 .unread {
   background-color: #FFFBCC;
