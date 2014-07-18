@@ -294,6 +294,22 @@ angular.module('services', ['ngCordova', 'ionic'])
     });
   };
 
+  apiCall.creatorRead = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/mark-read',
+      method: 'GET'
+    });
+  };
+
+  apiCall.recipientRead = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/mark-read',
+      method: 'GET'
+    });
+  };
+
+
+
   /************************
    *** SAMPLE API Calls ***
    ************************

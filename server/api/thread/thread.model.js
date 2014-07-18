@@ -6,6 +6,9 @@ var Schema = mongoose.Schema;
 var ThreadSchema = new Schema({
   participants: [{type: Schema.Types.ObjectId, ref: 'User'}],
   photos: [{type: Schema.Types.ObjectId, ref: 'Photo'}],
+  creator: {type: Schema.Types.ObjectId},
+  creatorRead: {type: Boolean, default: false},
+  recipientRead: {type: Boolean, default: false},
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date}
 });

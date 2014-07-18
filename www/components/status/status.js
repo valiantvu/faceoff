@@ -3,7 +3,7 @@ angular.module('faceoff.status', [
 	'services'
 	])
 
-.controller('StatusController', function($scope, $state, threads, ThreadsService, $http, API, $q, Camera) {
+.controller('StatusController', function($scope, $state, API) {
 
   $scope.user = JSON.parse(window.localStorage.getItem('deviceUser'));
 
@@ -19,6 +19,13 @@ angular.module('faceoff.status', [
   init();
 
 	$scope.selectThread = function(thread) {
+    // Mark thread as read before navigating to thread view.
+    if ($scope.user.id === thread.creator) {
+      API.creatorRead(thread._id)
+    }
+    else {
+      API.recipientRead(thread._id)
+    }
 		$state.go('thread', {threadId: thread._id});
 	};
 

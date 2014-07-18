@@ -21,7 +21,7 @@
     </div>
 
     <ion-list>
-      <ion-item ng-repeat="thread in threads | orderBy: '-updated_at' " ng-click="selectThread(thread)">
+      <ion-item ng-repeat="thread in threads | orderBy: '-updated_at' " ng-click="selectThread(thread)" ng-class="{unread: !thread.creatorRead}">
         {{thread.participants[1].first}} {{thread.participants[1].last}}
         <div class="row">
           <div ng-repeat="photo in thread.photos | limitTo: -3" class="col-25">
