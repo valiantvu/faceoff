@@ -127,7 +127,7 @@ exports.create = function (req, res, next) {
 
     // create thread
     var userParticipants = result;
-    var newThread = new Thread({participants: userParticipants});
+    var newThread = new Thread({participants: userParticipants, creator: userParticipants[0].id});
     newThread.save(function(err, thread) {
       if (err) return validationError(res, err);
       // Add thread to each participants thread array.
@@ -198,6 +198,22 @@ exports.findThread = function (req, res, next) {
     if (err) return err;
     if (!threadData) return res.send(null);
     res.json(threadData);
+  });
+};
+
+exports.creatorMarkRead = function (req, res, next) {
+  var threadId = req.params.id;
+  var read = req.params.read;
+  Thread.update({_id: threadId}, { $set: { creatorRead: read }}, function(err){
+    console.log(err)
+  });
+};
+
+exports.recipientMarkRead = function (req, res, next) {
+  var threadId = req.params.id;
+  var read = req.params.read;
+  Thread.update({_id: threadId}, { $set: { recipientRead: read }}, function(err){
+    console.log(err)
   });
 };
 
