@@ -17,6 +17,6 @@ angular.module('faceoff.thread', [
   init();
 
   $scope.replyPhoto = function(recipient) {
-    $state.go('replyphoto', {recipientId: recipient._id});
+    $state.go('newthreadgetready');
   };
 });

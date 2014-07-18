@@ -24,12 +24,7 @@ angular.module('faceoff.newthread', [
     // using getRandomPicture instead of getPicture for faster testing
     Camera.getRandomPicture().then(function(imageURI) {
       $rootScope.newThreadImageURI = imageURI;
-      if (Object.keys($stateParams).length > 0) {
-        console.log('kj');
-        $scope.selectFriend($stateParams.recipientId)
-      } else {
-        $state.go('newthreadselect');
-      }
+      $state.go('newthreadselect');
     }, function(err) {
       console.err(err);
     });

@@ -61,16 +61,6 @@ angular.module('app', [
       }
     })
 
-    // reply thread
-    .state('replyphoto', {
-      url: '/getready/:recipientId',
-      templateUrl: 'components/new_thread/getready.html',
-      controller: 'NewThreadController',
-      resolve: {
-        friends: function() { return [] }
-      }
-    })
-
     .state('newthreadselect', {
       url: '/selectfriend',
       templateUrl: 'components/new_thread/selectfriend.html',
@@ -146,7 +136,7 @@ angular.module('app', [
       { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', uuid: '2345', phone: 1112223333 },
       { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', uuid: '3456', phone: 2223334444 },
       { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', uuid: '4567', phone: 3334445555 },
-      { id: '53c863db979721d3e91ac6e7', first: 'Dave', last: 'G-W', phone: 5553331234, email: 'dave@me.com', status: 'confirmed', threads: [], uuid: 'dave123'}
+      { id: '53c88bfa5591db000025b15f', first: 'Dave', last: 'G-W', phone: 5553331234, email: 'dave@me.com', status: 'confirmed', threads: [], uuid: 'dave123'}
     ];
 
     // if no device data is available, we can assume we are in the browser
