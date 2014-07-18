@@ -86,7 +86,8 @@ var preCreate = function(participants){
         var newUser = new User({
           "first": "Pending",
           "last": "Pending",
-          "phone": participant
+          "phone": participant,
+          "status": "pending"
         });
         newUser.save(function(err, user){
           // bubble up errors
@@ -184,6 +185,18 @@ exports.showAllData = function (req, res, next) {
   Thread.findById(req.params.id).populate(options).exec(function (err, threadData) {
     if (err) return next(err);
     if (!threadData) return res.send(401);
+    res.json(threadData);
+  });
+};
+
+/**
+ * Get a thread based on request object search data.
+ */
+exports.findThread = function (req, res, next) {
+  console.log(req.body.participants);
+  Thread.findOne({participants: {$all: req.body.participants}}).exec(function (err, threadData) {
+    if (err) return err;
+    if (!threadData) return res.send(null);
     res.json(threadData);
   });
 };

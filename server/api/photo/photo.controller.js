@@ -1,6 +1,7 @@
 'use strict';
 
 var Photo = require('./photo.model');
+var User = require('../user/user.model');
 var Thread = require('../thread/thread.model');
 var passport = require('passport');
 var config = require('../../config/environment');
@@ -33,11 +34,11 @@ exports.index = function(req, res) {
  * Creates a new photo, expects ownerId, picture, threadID
  */
 exports.create = function (req, res, next) {
-
   var fstream;
   var photoData = {};
 
-  if (req.headers['content-type'] === 'multipart/form-data'){
+  //if (req.headers['content-type'] === 'multipart/form-data'){
+  if (req.headers['content-type'].indexOf('multipart/form-data') !== -1){
     var busboy = new Busboy({ headers: req.headers });
     //initiate form processing
     req.pipe(busboy);
@@ -90,8 +91,16 @@ exports.create = function (req, res, next) {
               thread.photos.push(photo.id);
               thread.save(function(err, updatedThread) {
               if (err) return validationError(res, err);
-              //res.json({ data: photo });
-              console.log('photo added to thread', updatedThread);
+              console.log('photo added to thread', updatedThread.id);
+              });
+            });
+            //add this photo to user collection
+            User.findById(photoData.owner, function (err, user) {
+              if (err) return err;
+              user.photos.push(photo.id);
+              user.save(function(err, photo) {
+                if (err) return err;
+                console.log('Added photo '+ photo.id + ' to user '+ photoData.owner);
               });
             });
           });
@@ -150,7 +159,7 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
             photo.cloudStatus = 'error';
             photo.save(function(err, photo) {
               if (err) return validationError(res, err);
-              console.log('Cloud status ERROR for photo ', photo);
+              console.log('Cloud status ERROR for photo ', photo.id);
             });
             return perr;
         } else {
@@ -159,7 +168,7 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
             photo.cloudStatus = 'confirmed';
             photo.save(function(err, photo) {
               if (err) return validationError(res, err);
-              console.log('Cloud status updated for photo ', photo);
+              console.log('Cloud status updated for photo ', photo.id);
             });
             exports.deleteTempFile(photoName);
             return pres;

@@ -11,6 +11,7 @@ var UserSchema = new Schema({
   first: {type: String},
   last: {type: String},
   email: { type: String},
+  status: { type: String, required: true},
   uuid: {type: String, default: ''}, //string
   picture: {type: String, default: ''}, //S3 url
   created_at : {type: Date, default: Date.now},

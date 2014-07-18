@@ -14,7 +14,6 @@ var validationError = function(res, err) {
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-
   User.find({}, function (err, users) {
     if(err) return res.send(500, err);
     res.json(200, users);
@@ -43,6 +42,18 @@ exports.show = function (req, res, next) {
   User.findById(userId, function (err, user) {
     if (err) return next(err);
     if (!user) return res.send(401);
+    res.json(user);
+  });
+};
+
+/**
+ * Find a single user
+ */
+exports.find = function (req, res, next) {
+  console.log(req.body);
+  User.findOne(req.body, function (err, user) {
+    if (err) return next(err);
+    if (!user) return res.send(null);
     res.json(user);
   });
 };
