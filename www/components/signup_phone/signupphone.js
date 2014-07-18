@@ -1,9 +1,9 @@
-angular.module('faceoff.signup', [
+angular.module('faceoff.signupphone', [
 	'ionic',
 	'services'
 	])
 
-.controller('SignUpController', function(Contacts, $scope, $state, $ionicPopup, Device) {
+.controller('SignUpPhoneController', function(Contacts, $scope, $state, $ionicPopup, Device) {
 
 	$scope.user = Device.user();
 
@@ -13,31 +13,12 @@ angular.module('faceoff.signup', [
 		if (PHONE_REGEXP.test($scope.user.phone)) {
 			// update user in local storage
 			var deviceUser = Device.user();
-			deviceUser.phone = $scope.user.phone;
+			deviceUser.phone = Contacts.concisePhone($scope.user.phone);
 			Device.user(deviceUser);
 			
 			$state.go('signupname');
 		} else {
 			$scope.invalidPhone();
-		}
-
-	};
-
-	$scope.completeSignUp = function() {
-
-		if ($scope.user.first.length > 0 && $scope.user.last.length > 0) {
-			// update local user
-
-			// post signup data to server
-				// success
-					// update local storage
-					// go to cameranew
-				// error
-					// show error in modal
-
-			$state.go('newthreadgetready');
-		} else {
-			$scope.invalidName();
 		}
 
 	};
@@ -65,13 +46,4 @@ angular.module('faceoff.signup', [
    });
  };
 
- // show alert for invalid names
- $scope.invalidName = function() {
-   $ionicPopup.alert({
-     title: 'Name Required',
-     template: 'First and Last name required.'
-   }).then(function(res) {
-     console.log('Try Again');
-   });
- };
 });
