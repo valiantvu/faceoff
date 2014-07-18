@@ -190,6 +190,18 @@ exports.showAllData = function (req, res, next) {
 };
 
 /**
+ * Get a thread based on request object search data.
+ */
+exports.findThread = function (req, res, next) {
+  console.log(req.body.participants);
+  Thread.findOne({participants: {$all: req.body.participants}}).exec(function (err, threadData) {
+    if (err) return err;
+    if (!threadData) return res.send(null);
+    res.json(threadData);
+  });
+};
+
+/**
  * Deletes a thread
  * restriction: 'admin'
  */

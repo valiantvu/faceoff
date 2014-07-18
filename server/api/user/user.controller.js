@@ -47,6 +47,18 @@ exports.show = function (req, res, next) {
 };
 
 /**
+ * Find a single user
+ */
+exports.find = function (req, res, next) {
+  console.log(req.body);
+  User.findOne(req.body, function (err, user) {
+    if (err) return next(err);
+    if (!user) return res.send(null);
+    res.json(user);
+  });
+};
+
+/**
  * Get a single user's threads
  * Populates the user, thread and photo with JSON data.
  */
