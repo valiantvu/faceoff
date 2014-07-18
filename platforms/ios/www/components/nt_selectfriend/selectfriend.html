@@ -7,11 +7,13 @@
 
   <ion-content class="has-header" padding="true">
 
-    <img ng-src="{{newThreadImageURI}}" style="width: 100%">
+    <!-- please center this :) -->
+    <img ng-src="{{capturedImageURI}}" style="width: 20%">
 
     <ion-list>
-      <ion-item ng-repeat="friend in friends | orderBy: 'id'" ng-click="selectFriend(friend.id)">
-        {{friend.first}} {{friend.last}} {{friend.id}}
+      <!-- | orderBy: 'last' -->
+      <ion-item ng-repeat="friend in friends" ng-click="selectFriend(friend)">
+        {{friend.first}} {{friend.last}}
       </ion-item>
     </ion-list>
 
