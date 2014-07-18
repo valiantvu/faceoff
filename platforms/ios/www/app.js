@@ -10,8 +10,11 @@ angular.module('app', [
   'services', // break up later
   'ngCordova',
   'faceoff.startup',
-  'faceoff.signup',
-  'faceoff.newthread',
+  'faceoff.signupphone',
+  'faceoff.signupname',
+  'faceoff.newthreadgetready',
+  'faceoff.newthreadselectfriend',
+  'faceoff.newthreadconfirm',
   'faceoff.menu',
   'faceoff.status',
   'faceoff.thread',
@@ -30,25 +33,17 @@ angular.module('app', [
       controller: 'StartUpController'
     })
 
-    // sign up
+    // sign up flow
     .state('signupphone', {
       url: '/signup',
-      templateUrl: 'components/signup/signupphone.html',
-      controller: 'SignUpController',
-      resolve: {
-        user: function(AccountService) { return {}; }
-      }
+      templateUrl: 'components/signup_phone/signupphone.html',
+      controller: 'SignUpPhoneController'
     })
 
     .state('signupname', {
       url: '/signup',
-      templateUrl: 'components/signup/signupname.html',
-      controller: 'SignUpController',
-      resolve: {
-        user: function(AccountService) {
-          return AccountService.searchContacts();
-        }
-      }
+      templateUrl: 'components/signup_name/signupname.html',
+      controller: 'SignUpNameController'
     })
 
     // confirm account
@@ -58,14 +53,23 @@ angular.module('app', [
       controller: 'ConfirmAccountController'
     })
 
-    // new thread
+    // new thread flow
     .state('newthreadgetready', {
       url: '/getready',
-      templateUrl: 'components/new_thread/getready.html',
-      controller: 'NewThreadController',
-      resolve: {
-        friends: function() { return [] }
-      }
+      templateUrl: 'components/nt_getready/getready.html',
+      controller: 'NTGetReadyController'
+    })
+
+    .state('newthreadselectfriend', {
+      url: '/selectfriend',
+      templateUrl: 'components/nt_selectfriend/selectfriend.html',
+      controller: 'NTSelectFriendController'
+    })
+
+    .state('newthreadconfirm', {
+      url: '/confirm',
+      templateUrl: 'components/nt_confirm/confirm.html',
+      controller: 'NTConfirmController'
     })
 
     // reply thread
@@ -74,42 +78,15 @@ angular.module('app', [
       templateUrl: 'components/new_thread/getready.html',
       controller: 'NewThreadController',
       resolve: {
-        friends: function() { return [] }
-      }
-    })
-
-    .state('newthreadselect', {
-      url: '/selectfriend',
-      templateUrl: 'components/new_thread/selectfriend.html',
-      controller: 'NewThreadController',
-      resolve: {
-        friends: function(FriendsService) {
-          return FriendsService.all();
-        }
-      }
-    })
-
-    .state('newthreadconfirm', {
-      url: '/confirm/:friendId',
-      templateUrl: 'components/new_thread/confirm.html',
-      controller: 'NewThreadController',
-      resolve: {
-        friends: function(FriendsService) {  // friends is only one friend in this case
-          return FriendsService.getSelected(); // need to refactor to get friend using ID.
-        }
+        friends: function() { return [] } // remove
       }
     })
 
     // thread
     .state('thread', {
-      url: '/thread',
+      url: '/thread/:threadId',
       templateUrl: 'components/thread/thread.html',
-      controller: 'ThreadController',
-      resolve: {
-        thread: function(ThreadsService) {
-          return ThreadsService.getSelected();
-        }
-      }
+      controller: 'ThreadController'
     })
 
     //Sidebar Child Views
@@ -140,15 +117,16 @@ angular.module('app', [
 })
 
 // Run Time Operations (startup)
-.run(function($ionicPlatform, Device) {
+.run(function($ionicPlatform, Device, AccountService) {
   $ionicPlatform.ready(function() {
     console.log('Platform Ready');
 
     // Grab and set all device details (model, platform, uuid, version) if available
     Device.set(ionic.Platform.device());
+    Device.setItem('type', 'phone');
 
     var simulationUsers = [
-      { id: 0, status: 'fresh', uuid: '1234' },
+      { id: 0, first: '', last: '', status: 'fresh', uuid: '1234' },
       { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', uuid: '2345', phone: 1112223333 },
       { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', uuid: '3456', phone: 2223334444 },
       { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', uuid: '4567', phone: 3334445555 }
@@ -156,15 +134,19 @@ angular.module('app', [
 
     // if no device data is available, we can assume we are in the browser
     if (ionic.Platform.device().uuid === undefined) {
-      console.log("test");
       // so we manually specify a deviceUser profile (simulation mode)
-      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[1]));
+      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[0]));
+      Device.setItem('type', 'internetdevice');
     }
     // otherwise if a user doesn't yet exist in the phone's local storage, we create one
     else if (window.localStorage.getItem('deviceUser') === null) {
-      var deviceUser = { status: 'fresh', uuid: Device.get('uuid') };
+      var deviceUser = { first: '', last: '', status: 'fresh', uuid: Device.get('uuid') };
       window.localStorage.setItem('deviceUser', JSON.stringify(deviceUser));
+      // Don't know why we need to do this here to work on phone
+      // expect that accessing storage takes too long
+      AccountService.authAndRoute();
     }
+    console.log("Platform Done Ready");
     
   });
 });

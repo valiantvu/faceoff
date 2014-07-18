@@ -1,37 +1,11 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['FriendsService', '$cordovaContacts', '$state', function(FriendsService, $cordovaContacts, $state) {
+.factory('AccountService', ['$state', 'Device', function($state, Device) {
   
-  // Some fake testing data
-  var dummyUsers = [
-    { id: 0, status: 'fresh', UUID: '1234' },
-    { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', UUID: '2345', phone: 1112223333 },
-    { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', UUID: '3456', phone: 2223334444 },
-    { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', UUID: '4567', phone: 3334445555 }
-  ];
-
-  var user = dummyUsers[0];
-  // if no user in local storage create one now, add uuid
-  // set user equal to user in local storage for fast access (assuming local storage can only be accessed with a promise)
-
   return {
-    updateUser: function(user) {
-      user = user;
-    },
-    searchContacts: function() {
-      var user = FriendsService.all()[0]; // perform search
-      return user;
-    },
-    logContacts: function() {
-      console.log("LOGGING");
-      $cordovaContacts.find({fields: ['id', 'displayName']}).then(function(contacts) {
-        console.log("SUCCESS ", contacts);
-      }, function(err) {
-        console.log("ERROR ", err);
-      });
-      console.log("ASYNC BABY");
-    },
     authAndRoute: function() {
+      var user = Device.user();
+
       // we assume user is from local storage
       if (user.status === 'fresh') {
         $state.go('signupphone');
@@ -47,6 +21,7 @@ angular.module('services', ['ngCordova', 'ionic'])
       }
     }
   }
+
 }])
 
 .factory('ThreadsService', function() {
@@ -77,76 +52,118 @@ angular.module('services', ['ngCordova', 'ionic'])
   }
 })
 
-.factory('FriendsService', function() {
-  // Some fake testing data
-  var contacts = [
-    { id: 0, first: 'Tim', last: 'McGruff', phone: '7778880001' },
-    { id: 1, first: 'James', last: 'Joe' , phone: '2223334444' },
-    { id: 2, first: 'Swill', last: 'Frizzle', phone: '3334445555' },
-    { id: 3, first: 'Relf', last: 'Ketchum', phone: '1114446666' }
-  ];
+.factory('Contacts', ['$q', 'Device', function($q, Device) {
 
-  var selectedFriend = { first: 'No one yet' };
-
-  return {
-    all: function() {
-      return contacts;
-    },
-    setSelected: function(friend) {
-      selectedFriend = friend;
-    },
-    getSelected: function() {
-      return selectedFriend;
+  var concisePhone = function(phone) {
+    // +1 (970) 618-7050  becomes  9706187050
+    // remove '+1' '(' ')' '-' '.' ' '  LAST CHARACTER IS NOT AN EMPTY SPACE
+    phone = phone.replace(/[' ')(\- ]/g, '');
+    phone = phone.replace(/\+1/g, '');
+    // don't allow 1 at front of number
+    if (phone.slice(0, 1) === '1') {
+      phone = phone.slice(1);
     }
-  }
-})
+    return phone;
+  };
 
-.factory('Contacts', ['$q', function($q) {
-
-  var logEach = function(contacts) {
+  var userMatchingPhone = function(contacts, phone) {
+  // returns first user with a matching phone number from contacts
     for(var i = 0; i < contacts.length; i++) {
-      console.log(contacts[i].name.givenName);
-      console.log(contacts[i].name.familyName);
       if (contacts[i].phoneNumbers) {
-        for (var j = 0; j < contacts[i].phoneNumbers.length; j++) {
-          console.log(contacts[i].phoneNumbers[j].value);
+        var phones = contacts[i].phoneNumbers;
+        for (var j = 0; j < phones.length; j++) {
+          if (concisePhone(phones[j].value) === phone) {
+            var match = {};
+            match.first = contacts[i].name.givenName;
+            match.last = contacts[i].name.familyName;
+            return match;
+          }
         }
       }
     }
+    return null;
+  };
+  
+  var contactsWithPhone = function(contacts) {
+  // returns all contacts in an array with first, last, and phone
+  // phone is mobile number formatted to 8880005555
+    var friends = [];
+
+    var bestPhone = function(phones) {
+      var best = phones[0].value;
+      for (var i = 0; i < phones.length; i++){
+        if (phones[i].type === 'mobile') {
+          best = phones[i].value;
+        }
+      }
+      return best;
+    };
+
+    for(var i = 0; i < contacts.length; i++) {
+      var c = contacts[i];
+      if (c.phoneNumbers && c.name.givenName && c.name.familyName) {
+        var friend = {};
+        friend.first = c.name.givenName;
+        friend.last = c.name.familyName;
+        friend.phone = concisePhone(bestPhone(c.phoneNumbers));
+        friends.push(friend);
+      }
+    }
+
+    // Log in Xcode Console
+    for (var i = 0; i < 30; i++){
+      console.log(JSON.stringify(friends[i]));
+    }
+    return friends;
   };
 
+  // asynchronous
+  var getAllContacts = function(callback) {
+    var q = $q.defer();
+
+    var fields = ['id', 'displayName'];
+    var options = { multiple: true };
+
+    navigator.contacts.find(fields, function(contacts) {
+      q.resolve(contacts);
+    }, function(err) {
+      q.reject(err);
+    }, options);
+
+    return q.promise;
+  };
+
+  // dummy data
+  var computerContacts = [
+    { first: 'Tim', last: 'McGruff', phone: '7778880001' },
+    { first: 'James', last: 'Joe' , phone: '2223334444' },
+    { first: 'Swill', last: 'Frizzle', phone: '3334445555' },
+    { first: 'Relf', last: 'Ketchum', phone: '1114446666' }
+  ];
+
   return {
-    // with promises
-    find: function() {
-      console.log("Promisified Contacts");
-      var q = $q.defer();
-
-      var fields = ['id', 'displayName'];
-
-      navigator.contacts.find(fields, function(contacts) {
-        q.resolve(contacts);
-      }, function(err) {
-        q.reject(err);
-      });
-
-      return q.promise;
+    getAll: function() {
+      return getAllContacts(); // promise resolves with array
     },
-    // without promises
-    log: function() {
-      console.log("Basic Contacts");
-      var fields = ['id', 'displayName'];
-      var options = { multiple: true };
-      navigator.contacts.find(fields, function(contacts) {
-        console.log("Received Contacts");
-        console.log("Success ", logEach(contacts));//JSON.stringify(contacts));
-      }, function(err) {
-        console.log(err);
-      }, options);
+    userMatchingPhone: function(contacts, phone) {
+      return userMatchingPhone(contacts, phone);
+    },
+    concisePhone: function(phone) {
+      return concisePhone(phone);
+    },
+    contactsWithPhone: function(contacts) {
+      if (Device.isPhone()) {
+        return contactsWithPhone(contacts);
+      } else {
+        return computerContacts;
+      }
     }
   }
+
 }])
 
 .factory('Camera', ['$q', function($q) {
+  // ideally getPicture would check for device type and launch webcam or phone cam(future feature)
  
   return {
     // opens photo view and returns a promise, promise returns a URI
@@ -165,7 +182,7 @@ angular.module('services', ['ngCordova', 'ionic'])
           destinationType: Camera.DestinationType.FILE_URI, 
           sourceType : Camera.PictureSourceType.CAMERA, 
           allowEdit : false
-        }; 
+        };
       }
       
       navigator.camera.getPicture(function(result) {
@@ -189,17 +206,111 @@ angular.module('services', ['ngCordova', 'ionic'])
   }
 }])
 
-// service to make device information available at any time
+// Custom service to make device information available at any time
+// expose device type (phone or computer)
+// and store device user data
 .factory('Device', function() {
-  var device;
+  var device = {};
 
   return {
     // available: model, platform, uuid, version
-    get: function(key) {
+    get: function() {
+      return device;
+    },
+    getItem: function(key) {
       return device[key];
     },
     set: function(obj) {
       device = obj;
+    },
+    setItem: function(key, value) {
+      device[key] = value;
+    },
+    isPhone: function() {
+      return device.type === 'phone';
+    },
+    user: function(obj) {
+      if (obj) {
+        window.localStorage.setItem('deviceUser', JSON.stringify(obj));
+      } else {
+        return JSON.parse(window.localStorage.getItem('deviceUser'));
+      }
     }
   }
-});
+})
+
+// Workaround attempt for sending multipart form data. Currently not used.
+.factory('formDataObject', function() {
+  return function(data) {
+    var fd = new FormData();
+    angular.forEach(data, function(value, key) {
+      fd.append(key, value);
+    });
+    return fd;
+  };
+})
+
+.factory('API', function($http, formDataObject) {
+  var apiCall = {};
+
+  apiCall.getAllUsers = function() {
+    return $http.get('http://localhost:9000/api/users');
+  };
+
+  apiCall.newThread = function() {
+    return $http({
+      url: 'http://localhost:9000/api/threads',
+      method: 'POST',
+      data: {
+        participants: [1002003000, 1112223333]
+      }
+    });
+  };
+
+  // Does not work for multipart forms.
+  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
+    return $http({
+      url: 'http://localhost:9000/api/photos',
+      method: 'POST',
+      data: {
+        threadId: threadId,
+        owner: ownerId,
+        url: photoURI
+      }
+      // headers: {
+      //   'Content-Type': 'multipart/form-data'
+      // },
+      // transformRequest: formDataObject
+    });
+  };
+
+  apiCall.getUser = function(userId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/' + userId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThread = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getThreadData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/all/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getAllThreadsData = function(threadId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  return apiCall;
+})
