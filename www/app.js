@@ -12,6 +12,7 @@ angular.module('app', [
   'faceoff.startup',
   'faceoff.signup',
   'faceoff.newthread',
+  'faceoff.confirmthread',
   'faceoff.menu',
   'faceoff.status',
   'faceoff.thread',
@@ -82,9 +83,9 @@ angular.module('app', [
     })
 
     .state('newthreadconfirm', {
-      url: '/confirm/:friendId',
-      templateUrl: 'components/new_thread/confirm.html',
-      controller: 'NewThreadController',
+      url: '/confirm',
+      templateUrl: 'components/confirm/confirm.html',
+      controller: 'ConfirmController',
       resolve: {
         friends: function(FriendsService) {  // friends is only one friend in this case
           return FriendsService.getSelected(); // need to refactor to get friend using ID.
@@ -145,7 +146,7 @@ angular.module('app', [
       { id: 1, first: 'G.I.', last: 'Joe', status: 'pending', uuid: '2345', phone: 1112223333 },
       { id: 2, first: 'Miss', last: 'Frizzle', status: 'confirmed', uuid: '3456', phone: 2223334444 },
       { id: 3, first: 'Ash', last: 'Ketchum', status: 'confirmed', uuid: '4567', phone: 3334445555 },
-      { id: '53c839e6eaf6cb31c30876e4', first: 'Dave', last: 'G-W', phone: 5553331234, email: 'dave@me.com', status: 'confirmed', threads: [], uuid: 'dave123'}
+      { id: '53c863db979721d3e91ac6e7', first: 'Dave', last: 'G-W', phone: 5553331234, email: 'dave@me.com', status: 'confirmed', threads: [], uuid: 'dave123'}
     ];
 
     // if no device data is available, we can assume we are in the browser

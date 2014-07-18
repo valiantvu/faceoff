@@ -36,8 +36,8 @@ angular.module('faceoff.newthread', [
   };
 
   $scope.selectFriend = function(friend) {
-    // FriendsService.setSelected($scope.friends[friend]);
-    $state.go('newthreadconfirm', {friendId: friend});
+    FriendsService.setSelected($scope.friends[friend]);
+    $state.go('newthreadconfirm');
   };
 
   // if ($state.current.name === 'newthreadgetready') {

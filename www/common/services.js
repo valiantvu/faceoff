@@ -60,7 +60,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     { id: 3, first: 'Relf', last: 'Ketchum', phone: '1114446666' }
   ];
 
-  var selectedFriend = { first: 'No one yet' };
+  var selectedFriend = { first: 'No one', last: 'yet', phone: 123};
 
   return {
     all: function() {
@@ -219,10 +219,31 @@ angular.module('services', ['ngCordova', 'ionic'])
       method: 'POST',
       data: userData
     });
-  }
+  };
 
-  apiCall.getAllUsers = function() {
-    return $http.get('http://localhost:9000/api/users');
+  apiCall.getUser = function(userId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/' + userId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.searchForUser = function(user) {
+    return $http({
+      url: 'http://localhost:9000/api/users/find',
+      method: 'POST',
+      data: user
+    });
+  };
+
+  apiCall.searchForThread = function(user1, user2) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/find-thread',
+      method: 'POST',
+      data: {
+        participants: [user1, user2]
+      }
+    });
   };
 
   apiCall.newThread = function(participants) {
@@ -249,13 +270,6 @@ angular.module('services', ['ngCordova', 'ionic'])
       //   'Content-Type': 'multipart/form-data'
       // },
       // transformRequest: formDataObject
-    });
-  };
-
-  apiCall.getUser = function(userId) {
-    return $http({
-      url: 'http://localhost:9000/api/users/' + userId,
-      method: 'GET'
     });
   };
 
