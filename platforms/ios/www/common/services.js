@@ -162,46 +162,46 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 }])
 
-.factory('Camera', ['$q', function($q) {
+.factory('Camera', ['$q', 'Device', function($q, Device) {
   // ideally getPicture would check for device type and launch webcam or phone cam(future feature)
  
   return {
-    // opens photo view and returns a promise, promise returns a URI
+    // opens photo view and returns a promise, promise resolves with a URI
     getPicture: function(options) {
-      var q = $q.defer();
-      
-      if (options === undefined) {
-        // cameraDirection: "1" for front-facing, "2" for user-facing
-        // destinationType: Camera.DestinationType.DATA_URL
-        options = {
-          cameraDirection: 1,
-          quality: 75,
-          targetWidth: 320,
-          targetHeight: 320,
-          saveToPhotoAlbum: true,
-          destinationType: Camera.DestinationType.FILE_URI, 
-          sourceType : Camera.PictureSourceType.CAMERA, 
-          allowEdit : false
-        };
+      if (Device.isPhone()) {
+        var q = $q.defer();
+        if (options === undefined) {
+          // cameraDirection: "1" for front-facing, "2" for user-facing
+          // destinationType: Camera.DestinationType.DATA_URL
+          options = {
+            cameraDirection: 1,
+            quality: 75,
+            targetWidth: 320,
+            targetHeight: 320,
+            saveToPhotoAlbum: true,
+            destinationType: Camera.DestinationType.FILE_URI, 
+            sourceType : Camera.PictureSourceType.CAMERA, 
+            allowEdit : false
+          };
+        }
+        
+        navigator.camera.getPicture(function(result) {
+          q.resolve(result);
+        }, function(err) {
+          q.reject(err);
+        }, options);
+        
+        return q.promise;
+      } else {
+        // generates a random photo in browser
+        // for development purposes
+        var q = $q.defer();
+        var numImages = 26;
+        var directory = 'img/seedFaces/';
+        var index = Math.ceil(Math.random()*numImages);
+        q.resolve(directory+index+'.jpg');
+        return q.promise;
       }
-      
-      navigator.camera.getPicture(function(result) {
-        // Do any magic you need
-        q.resolve(result);
-      }, function(err) {
-        q.reject(err);
-      }, options);
-      
-      return q.promise;
-    },
-    // for development purposes, a "virtual promise"
-    getRandomPicture: function() {
-      var q = $q.defer();
-      var numImages = 26;
-      var directory = 'img/seedFaces/';
-      var index = Math.ceil(Math.random()*numImages);
-      q.resolve(directory+index+'.jpg');
-      return q.promise;
     }
   }
 }])
@@ -253,16 +253,45 @@ angular.module('services', ['ngCordova', 'ionic'])
 .factory('API', function($http, formDataObject) {
   var apiCall = {};
 
-  apiCall.getAllUsers = function() {
-    return $http.get('http://localhost:9000/api/users');
+  apiCall.newUser = function(userData) {
+    return $http({
+      url: 'http://localhost:9000/api/users',
+      method: 'POST',
+      data: userData
+    });
   };
 
-  apiCall.newThread = function() {
+  apiCall.getUser = function(userId) {
+    return $http({
+      url: 'http://localhost:9000/api/users/' + userId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.searchForUser = function(user) {
+    return $http({
+      url: 'http://localhost:9000/api/users/find',
+      method: 'POST',
+      data: user
+    });
+  };
+
+  apiCall.searchForThread = function(user1, user2) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/find-thread',
+      method: 'POST',
+      data: {
+        participants: [user1, user2]
+      }
+    });
+  };
+
+  apiCall.newThread = function(participants) {
     return $http({
       url: 'http://localhost:9000/api/threads',
       method: 'POST',
       data: {
-        participants: [1002003000, 1112223333]
+        participants: participants // participants should be an array of phone numbers: Ex [1002003000, 1112223333]
       }
     });
   };
@@ -281,13 +310,6 @@ angular.module('services', ['ngCordova', 'ionic'])
       //   'Content-Type': 'multipart/form-data'
       // },
       // transformRequest: formDataObject
-    });
-  };
-
-  apiCall.getUser = function(userId) {
-    return $http({
-      url: 'http://localhost:9000/api/users/' + userId,
-      method: 'GET'
     });
   };
 
@@ -311,6 +333,112 @@ angular.module('services', ['ngCordova', 'ionic'])
       method: 'GET'
     });
   };
+
+  apiCall.creatorRead = function(threadId, read) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/read/' + read,
+      method: 'GET'
+    });
+  };
+
+  apiCall.recipientRead = function(threadId, read) {
+    return $http({
+      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/read/' + read,
+      method: 'GET'
+    });
+  };
+
+  apiCall.uploadPhoto = function(imageURI) {
+    var success = function(UploadResult) {
+      console.log("Success ########### ", JSON.stringify(UploadResult));
+    };
+    var error = function(error) {
+      console.log("ERROR ############ ", error);
+    };
+    var fileURL = imageURI; // need this from actual device
+    console.log("imageURI = ", imageURI);
+    var options = {
+      fileKey: "file",
+      fileName: "serverImage.jpg", // fileURL.substr(fileURL.lastIndexOf('/') + 1),
+      mimeType: "image/jpeg",
+      params: { key: 'val'}, // for http request if necessary
+      chunkedMode: true
+    }
+
+    var ft = new FileTransfer();
+    console.log("created ft OK");
+    var endpoint = encodeURI("https://post.imageshack.us/upload_api.php"); // 
+    console.log("encoded = ", endpoint);
+    ft.upload(fileURL, endpoint, succcess, error, options); // true
+  };
+
+
+
+  /************************
+   *** SAMPLE API Calls ***
+   ************************
+    API.getAllUsers()
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.newThread([1112223334,1234567890])
+      .success(function(newThread) {
+        console.log(newThread);
+        var threadId = newThread.data._id;
+        var ownerId = newThread.data.participants[0];
+        // Remove this line when we have real photos to send.
+        Camera.getRandomPicture().then(function(image) {
+          API.newPhoto(threadId, ownerId, image)
+            .success(function(data) {
+              console.log(data);
+            })
+            .error(function(error) {
+              console.log(error);
+            });
+        })
+      })
+      .error(function(error) {
+        console.log('error');
+        console.log(error);
+      })
+
+    newPhoto only test.
+    API.newPhoto("53c741465a44899857fb64a8", "53c741465a44899857fb64a6")
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      })
+    
+    API.getThread('53c741465a44899857fb64a8')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.getUser('53c741465a44899857fb64a6')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+
+    API.getAllThreadsData('53c7794489f357de7dbf6186')
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+  */  
 
   return apiCall;
 })

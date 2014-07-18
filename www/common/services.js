@@ -162,46 +162,46 @@ angular.module('services', ['ngCordova', 'ionic'])
 
 }])
 
-.factory('Camera', ['$q', function($q) {
+.factory('Camera', ['$q', 'Device', function($q, Device) {
   // ideally getPicture would check for device type and launch webcam or phone cam(future feature)
  
   return {
-    // opens photo view and returns a promise, promise returns a URI
+    // opens photo view and returns a promise, promise resolves with a URI
     getPicture: function(options) {
-      var q = $q.defer();
-      
-      if (options === undefined) {
-        // cameraDirection: "1" for front-facing, "2" for user-facing
-        // destinationType: Camera.DestinationType.DATA_URL
-        options = {
-          cameraDirection: 1,
-          quality: 75,
-          targetWidth: 320,
-          targetHeight: 320,
-          saveToPhotoAlbum: true,
-          destinationType: Camera.DestinationType.FILE_URI, 
-          sourceType : Camera.PictureSourceType.CAMERA, 
-          allowEdit : false
-        };
+      if (Device.isPhone()) {
+        var q = $q.defer();
+        if (options === undefined) {
+          // cameraDirection: "1" for front-facing, "2" for user-facing
+          // destinationType: Camera.DestinationType.DATA_URL
+          options = {
+            cameraDirection: 1,
+            quality: 75,
+            targetWidth: 320,
+            targetHeight: 320,
+            saveToPhotoAlbum: true,
+            destinationType: Camera.DestinationType.FILE_URI, 
+            sourceType : Camera.PictureSourceType.CAMERA, 
+            allowEdit : false
+          };
+        }
+        
+        navigator.camera.getPicture(function(result) {
+          q.resolve(result);
+        }, function(err) {
+          q.reject(err);
+        }, options);
+        
+        return q.promise;
+      } else {
+        // generates a random photo in browser
+        // for development purposes
+        var q = $q.defer();
+        var numImages = 26;
+        var directory = 'img/seedFaces/';
+        var index = Math.ceil(Math.random()*numImages);
+        q.resolve(directory+index+'.jpg');
+        return q.promise;
       }
-      
-      navigator.camera.getPicture(function(result) {
-        // Do any magic you need
-        q.resolve(result);
-      }, function(err) {
-        q.reject(err);
-      }, options);
-      
-      return q.promise;
-    },
-    // for development purposes, a "virtual promise"
-    getRandomPicture: function() {
-      var q = $q.defer();
-      var numImages = 26;
-      var directory = 'img/seedFaces/';
-      var index = Math.ceil(Math.random()*numImages);
-      q.resolve(directory+index+'.jpg');
-      return q.promise;
     }
   }
 }])
@@ -346,6 +346,30 @@ angular.module('services', ['ngCordova', 'ionic'])
       url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/read/' + read,
       method: 'GET'
     });
+  };
+
+  apiCall.uploadPhoto = function(imageURI) {
+    var success = function(UploadResult) {
+      console.log("Success ########### ", JSON.stringify(UploadResult));
+    };
+    var error = function(error) {
+      console.log("ERROR ############ ", error);
+    };
+    var fileURL = imageURI; // need this from actual device
+    console.log("imageURI = ", imageURI);
+    var options = {
+      fileKey: "file",
+      fileName: "serverImage.jpg", // fileURL.substr(fileURL.lastIndexOf('/') + 1),
+      mimeType: "image/jpeg",
+      params: { key: 'val'}, // for http request if necessary
+      chunkedMode: true
+    }
+
+    var ft = new FileTransfer();
+    console.log("created ft OK");
+    var endpoint = encodeURI("https://post.imageshack.us/upload_api.php"); // 
+    console.log("encoded = ", endpoint);
+    ft.upload(fileURL, endpoint, succcess, error, options); // true
   };
 
 
