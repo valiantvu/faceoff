@@ -31,6 +31,7 @@ module.exports = function(app) {
   if ('production' === env) {
     app.use(favicon(path.join(config.root, 'public', 'favicon.ico')));
     app.use(express.static(path.join(config.root, 'public')));
+    // app.use(express.static(path.join(config.root, 'public/static_pages')));
     app.set('appPath', config.root + '/public');
     app.use(morgan('dev'));
   }
@@ -39,7 +40,7 @@ module.exports = function(app) {
     app.use(require('connect-livereload')({ port: 9000 }));
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(path.join(config.root, 'client')));
-    app.use(express.static(path.join(config.root, 'server/static_pages')));
+    app.use(express.static(path.join(config.root, 'public/static_pages')));
     app.set('appPath', 'client');
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be last
