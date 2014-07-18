@@ -15,16 +15,18 @@
 	    	<h2>Shawn</h2>
 	    </a>
 		</div> -->
-    <div  ng-click="clickMe()"> CLICK ME</div>
+    <!-- Used to seed database with current user data. Delete when current user is live. -->
+    <div class="row">
+      <div  ng-click="seedDataBase()">Seed Data Base</div>
+    </div>
 
     <ion-list>
-      <ion-item ng-repeat="thread in threads | orderBy: '-id' " ng-click="selectThread(thread)">
-        {{thread.first}} {{thread.last}} {{thread.new}}
+      <ion-item ng-repeat="thread in threads | orderBy: '-updated_at' " ng-click="selectThread(thread)">
+        {{thread.participants[1].first}} {{thread.participants[1].last}}
         <div class="row">
-          <div ng-repeat="photo in thread.photos | limitTo: -3" ng-click="selectThread(thread)" class="col">
-            <img ng-src="{{photo}}" style="width: 100%">
+          <div ng-repeat="photo in thread.photos | limitTo: -3" class="col-25">
+            <img ng-src="{{photo.url}}" class="thread-photo">
           </div>
-          <div class="col"></div>
         </div>
       </ion-item>
     </ion-list>

@@ -3,24 +3,36 @@ angular.module('faceoff.status', [
 	'services'
 	])
 
-.controller('StatusController', function($scope, $state, threads, ThreadsService, $http) {
+.controller('StatusController', function($scope, $state, threads, ThreadsService, $http, API, $q, Camera) {
 
-	console.log("THREADS ", threads);
-	$scope.threads = threads;
+  $scope.user = JSON.parse(window.localStorage.getItem('deviceUser'));
+
+  var init = function() {
+    API.getAllThreadsData($scope.user.id)
+      .success(function(data) {
+        $scope.threads = data.threads;
+      })
+      .error(function(error) {
+        console.log(error);
+      });
+  }
+  init();
 
 	$scope.selectThread = function(thread) {
-		ThreadsService.setSelected(thread);
-		$state.go('thread');
-	}
+		$state.go('thread', {threadId: thread._id});
+	};
 
-  $scope.clickMe = function() {
-    $http.get("http://tradingfaces.herokuapp.com/api/users")
-              .success(function(data) {
-                console.log(data);
-              })
-              .error(function(error) {
-                console.log(error);
-              })
+  // Used in testing for seeding a user with data.
+  $scope.seedDataBase = function() {
+    var userData = {
+      first: 'Dave',
+      last: 'G-W',
+      phone: 5553331234,
+      email: 'dave@me.com',
+      status: 'confirmed',
+      threads: [],
+      uuid: 'dave123'
+    }
+    API.newUser(userData);
   }
-
 });
