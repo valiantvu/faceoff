@@ -18,22 +18,12 @@ angular.module('faceoff.confirmthread', [
       API.searchForThread($scope.user.id, $scope.friends._id).success(function(foundThread) {
         if (foundThread) {
           // console.log('find',foundThread);
-          Camera.getRandomPicture().then(function(image) {
-            API.newPhoto(foundThread._id, $scope.user.id, image)
-              .success(function(data) {
-                $state.go('menu.status');
-              })
-              .error(function(error) {
-                console.log(error);
-              });
-          });
-
+          createNewPhoto(foundThread._id, $scope.user.id);
         }
         else {
           createNewThread();
         }
-      })
-      
+      })  
     }
     else {
       createNewThread();
@@ -46,20 +36,24 @@ angular.module('faceoff.confirmthread', [
         console.log(newThread);
         var threadId = newThread.data._id;
         var ownerId = newThread.data.participants[0];
-        // Remove this line when we have real photos to send.
-        Camera.getRandomPicture().then(function(image) {
-          API.newPhoto(threadId, ownerId, image)
-            .success(function(data) {
-              $state.go('menu.status');
-            })
-            .error(function(error) {
-              console.log(error);
-            });
-        })
+        createNewPhoto(threadId, ownerId);
       })
       .error(function(error) {
         console.log(error);
       })
+  }
+
+  var createNewPhoto = function(threadId, userId) {
+    // Remove this line when we have real photos to send.
+    Camera.getRandomPicture().then(function(image) {
+      API.newPhoto(threadId, userId, image)
+        .success(function(data) {
+          $state.go('menu.status');
+        })
+        .error(function(error) {
+          console.log(error);
+        });
+    });
   }
 
   var init = function() {
