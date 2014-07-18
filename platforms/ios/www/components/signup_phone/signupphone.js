@@ -24,26 +24,17 @@ angular.module('faceoff.signupphone', [
 	};
 
 	$scope.test = function() {
-		console.log("Platform ", JSON.stringify(navigator.userAgent));
-		console.log("Platform ", navigator.userAgent);
-
-		// testing contacts
-		// Contacts.find().then(function(contacts) {
-		// 	console.log("CONTACTS ", JSON.parse(contacts));
-		// }, function(err) {
-		// 	console.log(err);
-		// });
-		Contacts.log();
+		// Place for testing new functionality
 	};
 
-// show alert for invalid phone
- $scope.invalidPhone = function() {
-   $ionicPopup.alert({
-     title: 'Invalid Phone Number',
-     template: 'Phone number must be 10 digits.'
-   }).then(function(res) {
-     console.log('Try Again');
-   });
- };
+	// show alert for invalid phone
+	$scope.invalidPhone = function() {
+	  $ionicPopup.alert({
+	    title: 'Invalid Phone Number',
+      template: 'Phone number must be 10 digits.'
+	  }).then(function(res) {
+	    console.log('Try Again');
+    });
+  };
 
 });

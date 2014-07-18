@@ -7,11 +7,15 @@ angular.module('faceoff.newthreadgetready', [
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 })
 
-.controller('NTGetReadyController', function($scope, $state, Camera, $timeout, $rootScope) {
+.controller('NTGetReadyController', function($scope, $state, Camera, $timeout, $rootScope, API, Device) {
 
   $scope.shoot = function() {
-    // using getRandomPicture instead of getPicture for faster testing
-    Camera.getRandomPicture().then(function(imageURI) {
+    Camera.getPicture().then(function(imageURI) {
+      // testing upload
+      if (Device.isPhone()) {
+        API.uploadPhoto(imageURI);
+      }
+
       $rootScope.capturedImageURI = imageURI;
       $state.go('newthreadselectfriend');
     }).catch(function(err) { console.log(err); });

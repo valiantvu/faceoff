@@ -11,7 +11,7 @@ angular.module('faceoff.newthreadconfirm', [
 
   $scope.selectedFriend = $rootScope.selectedFriend;
   $scope.capturedImageURI = $rootScope.capturedImageURI;
-  $scope.user = JSON.parse(window.localStorage.getItem('deviceUser'));
+  $scope.user = Device.user();
   var registeredFriend = false;
 
   $scope.confirm = function() {
