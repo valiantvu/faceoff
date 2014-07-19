@@ -110,10 +110,10 @@ angular.module('services', ['ngCordova', 'ionic'])
       }
     }
 
-    // Log in Xcode Console
-    for (var i = 0; i < 30; i++){
-      console.log(JSON.stringify(friends[i]));
-    }
+    // Log friends in Xcode Console
+    // for (var i = 0; i < 30; i++){
+    //   console.log(JSON.stringify(friends[i]));
+    // }
     return friends;
   };
 
@@ -175,12 +175,15 @@ angular.module('services', ['ngCordova', 'ionic'])
           // destinationType: Camera.DestinationType.DATA_URL
           options = {
             cameraDirection: 1,
-            quality: 75,
+            quality: 1, // testing at very low quality
             targetWidth: 320,
             targetHeight: 320,
             saveToPhotoAlbum: true,
-            destinationType: Camera.DestinationType.FILE_URI, 
-            sourceType : Camera.PictureSourceType.CAMERA, 
+            destinationType: navigator.camera.DestinationType.FILE_URI,
+              // DATA_URL : 0,      // Return image as base64-encoded string
+              // FILE_URI : 1,      // Return image file URI as stored in memory
+              // NATIVE_URI : 2     // Return image native URI (e.g., assets-library:// on iOS 
+            sourceType : navigator.camera.PictureSourceType.CAMERA,
             allowEdit : false
           };
         }
@@ -349,27 +352,35 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 
   apiCall.uploadPhoto = function(imageURI) {
-    var success = function(UploadResult) {
-      console.log("Success ########### ", JSON.stringify(UploadResult));
+    var win = function(UploadResult) {
+      console.log('Success ########### ', JSON.stringify(UploadResult));
     };
-    var error = function(error) {
-      console.log("ERROR ############ ", error);
+    var fail = function(error) {
+      console.log('ERROR ############ ', JSON.stringify(error));
     };
-    var fileURL = imageURI; // need this from actual device
-    console.log("imageURI = ", imageURI);
-    var options = {
-      fileKey: "file",
-      fileName: "serverImage.jpg", // fileURL.substr(fileURL.lastIndexOf('/') + 1),
-      mimeType: "image/jpeg",
-      params: { key: 'val'}, // for http request if necessary
-      chunkedMode: true
-    }
+    console.log('imageURI = ', imageURI);
+    var options = new FileUploadOptions;
+    options.fileKey = 'photo';
+    options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1);
+    console.log('filename ', options.fileName);
+    options.mimeType = 'image/jpeg';
+    options.params = {
+      owner: '53c407465386dbf21f97824d',
+      threadId: '553c846a886b861bc3df890e7'
+    };
+    options.chunkedMode = true;
+    options.headers = {
+      'Content-Type': 'multipart/formdata'
+      // 'Connection': 'close'
+    };
 
     var ft = new FileTransfer();
-    console.log("created ft OK");
-    var endpoint = encodeURI("https://post.imageshack.us/upload_api.php"); // 
-    console.log("encoded = ", endpoint);
-    ft.upload(fileURL, endpoint, succcess, error, options); // true
+    console.log(JSON.stringify(ft));
+    console.log(JSON.stringify(ft.prototype)); // shows nothing
+    console.log('created ft OK');
+    var endpoint = encodeURI('http://tradingfaces.herokuapp.com/api/photos/'); // 'http://tradingfaces.apiary-mock.com/photos/'
+    console.log('encoded = ', endpoint);
+    ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
   };
 
 
