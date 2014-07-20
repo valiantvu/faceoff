@@ -126,7 +126,7 @@ angular.module('app', [
     // if no device data is available, we can assume we are in the browser
     if (ionic.Platform.device().uuid === undefined) {
       // so we manually specify a deviceUser profile (simulation mode)
-      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[0]));
+      window.localStorage.setItem('deviceUser', JSON.stringify(simulationUsers[4]));
       Device.setItem('type', 'internetdevice');
     }
     // otherwise if a user doesn't yet exist in the phone's local storage, we create one

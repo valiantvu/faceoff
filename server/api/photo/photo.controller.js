@@ -37,12 +37,12 @@ exports.create = function (req, res, next) {
   var fstream;
   var photoData = {};
 
-  //if (req.headers['content-type'] === 'multipart/form-data'){
-  if (req.headers['content-type'].indexOf('multipart/form-data') !== -1){
+
+    console.log('in form data');
     var busboy = new Busboy({ headers: req.headers });
     //initiate form processing
     req.pipe(busboy);
-
+      //busboy parses out the multipart/form data
       busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
         //save file
@@ -73,16 +73,17 @@ exports.create = function (req, res, next) {
         if (photoData.owner && photoData.photo && photoData.threadId){
 
           var newPhoto = new Photo(photoData);
+          //create the new photo object
           newPhoto.save(function(err, photo) {
             if (err) res.send(validationError(res, err));
             //hard code for now
             photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
-            photo.cloudStatus = 'pending';
+            photo.cloudStatus = 'in process';
             photo.name= photo.id;
             //set the photo name to the photo object id
             photo.save(function(err, photo) {
               if (err) return validationError(res, err);
-              exports.uploadToCloud(photo, photoData.photo, photo.id);
+              uploadToCloud(photo, photoData.photo, photo.id);
               res.json({ data: photo });
             });
             //add this photo to the thread
@@ -108,33 +109,15 @@ exports.create = function (req, res, next) {
           res.send('we need a valid userId for the owner and photo data');
         }
       });
-  }
-  else {
-    var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
-    newPhoto.save(function(err, photo) {
-      Thread.findById(req.body.threadId, function(err, thread) {
-        if (err) return validationError(res, err);
-        thread.photos.push(photo.id);
-        thread.save(function(err, updatedThread) {
-          if (err) return validationError(res, err);
-          res.json({ data: photo });
-        });
-      });
-  });
-  }
 };
 
 /**
  * Upload temp file to S3 / delete temp
  */
 
-exports.uploadToCloud = function (photo, photoName, photoId) {
-
-
-
+var uploadToCloud = function (photo, photoName, photoId) {
 
   console.log('upload to cloud got photo id of ' +  photoId + 'and name '+ photoName);
-
 
   var accessKeyId =  process.env.AWS_KEY || AWS_CREDS.AWS_KEY;
   var secretAccessKey = process.env.AWS_SECRET || AWS_CREDS.AWS_SECRET;
@@ -144,6 +127,7 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
     secretAccessKey: secretAccessKey
   });
 
+  //Grab the photo from temp storage in the server
   fs.readFile('./tempImages/'+ photoName, function (err, data) {
 
     var params = {
@@ -153,6 +137,7 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
       };
 
     var s3 = new AWS.S3();
+    //Send photo to s3
     s3.putObject(params, function (perr, pres) {
         if (perr) {
             console.log("Error uploading data: ", perr);
@@ -164,13 +149,13 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
             return perr;
         } else {
           console.log('resp from amazon', pres);
-            console.log("Successfully uploaded " +photoName +" to myBucket/myKey");
+            console.log("Successfully uploaded " +photoName +" to s3 bucket");
             photo.cloudStatus = 'confirmed';
             photo.save(function(err, photo) {
               if (err) return validationError(res, err);
               console.log('Cloud status updated for photo ', photo.id);
             });
-            exports.deleteTempFile(photoName);
+            deleteTempFile(photoName);
             return pres;
         }
     });
@@ -182,7 +167,7 @@ exports.uploadToCloud = function (photo, photoName, photoId) {
  * Delete TempFile
  */
 
-exports.deleteTempFile = function (photoName) {
+var deleteTempFile = function (photoName) {
 
   fs.unlink('./tempImages/'+ photoName, function (err) {
     if (err) throw err;
@@ -207,7 +192,6 @@ exports.show = function (req, res, next) {
 
 /**
  * Deletes a photo
- * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
   Photo.findByIdAndRemove(req.params.id, function(err, photo) {
@@ -216,44 +200,5 @@ exports.destroy = function(req, res) {
   });
 };
 
-/**
- * Change a photos password
- */
-exports.changePassword = function(req, res, next) {
-  var photoId = req.photo._id;
-  var oldPass = String(req.body.oldPassword);
-  var newPass = String(req.body.newPassword);
 
-  Photo.findById(photoId, function (err, photo) {
-    if(photo.authenticate(oldPass)) {
-      photo.password = newPass;
-      photo.save(function(err) {
-        if (err) return validationError(res, err);
-        res.send(200);
-      });
-    } else {
-      res.send(403);
-    }
-  });
-};
 
-/**
- * Get my info
- */
-exports.me = function(req, res, next) {
-  var photoId = req.photo._id;
-  Photo.findOne({
-    _id: photoId
-  }, '-salt -hashedPassword', function(err, photo) { // don't ever give out the password or salt
-    if (err) return next(err);
-    if (!photo) return res.json(401);
-    res.json(photo);
-  });
-};
-
-/**
- * Authentication callback
- */
-exports.authCallback = function(req, res, next) {
-  res.redirect('/');
-};

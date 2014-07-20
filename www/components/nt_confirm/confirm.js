@@ -7,7 +7,7 @@ angular.module('faceoff.newthreadconfirm', [
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 })
 
-.controller('NTConfirmController', function($scope, $state, $rootScope, API) {
+.controller('NTConfirmController', function($scope, $state, $rootScope, API, Device) {
 
   $scope.selectedFriend = $rootScope.selectedFriend;
   $scope.capturedImageURI = $rootScope.capturedImageURI;
