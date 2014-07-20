@@ -14,6 +14,5 @@ router.get('/:id/creator/read/:read', controller.creatorMarkRead);
 router.get('/:id/recipient/read/:read', controller.recipientMarkRead);
 router.post('/find-thread', controller.findThread);
 router.post('/', controller.create);
-router.post('/photos', controller.addPhoto);
 
 module.exports = router;
