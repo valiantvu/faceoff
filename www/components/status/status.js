@@ -29,7 +29,9 @@ angular.module('faceoff.status', [
 		$state.go('thread', {threadId: thread._id});
 	};
 
-  // Used in testing for seeding a user with data.
+  /*
+  // Used in testing for seeding a user with data. 
+  // Uncomment here and in status.html to add seed data to database.
   $scope.seedDataBase = function() {
     var userData = {
       first: 'Dave',
@@ -42,4 +44,5 @@ angular.module('faceoff.status', [
     }
     API.newUser(userData);
   }
+  */
 });

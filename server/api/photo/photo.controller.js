@@ -37,7 +37,27 @@ exports.create = function (req, res, next) {
   var fstream;
   var photoData = {};
 
+  /*  
+    Busboy only reads multipart form requests. This statement re-routes JSON requests
+    so photos can be added when testing in the browser. Statment will be bypassed 
+    in mobile as native camera photos are sent in multipart format.
+  */
+  if (req.headers['content-type'] === 'application/json;charset=UTF-8'){
+    var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
+    newPhoto.save(function(err, photo) {
+      Thread.findById(req.body.threadId, function(err, thread) {
+        if (err) return validationError(res, err);
+        thread.photos.push(photo.id);
+        thread.save(function(err, updatedThread) {
+          if (err) return validationError(res, err);
+          res.json({ data: photo });
+        });
+      });
+    });
+  }
 
+  // Mobile app will send multipart form request and use this statement.
+  else {
     console.log('in form data');
     var busboy = new Busboy({ headers: req.headers });
     //initiate form processing
@@ -109,6 +129,7 @@ exports.create = function (req, res, next) {
           res.send('we need a valid userId for the owner and photo data');
         }
       });
+  }
 };
 
 /**
