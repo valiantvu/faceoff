@@ -175,16 +175,17 @@ angular.module('services', ['ngCordova', 'ionic'])
           // destinationType: Camera.DestinationType.DATA_URL
           options = {
             cameraDirection: 1,
-            quality: 1, // testing at very low quality
-            targetWidth: 320,
-            targetHeight: 320,
-            saveToPhotoAlbum: true,
+            quality: 90, // 1-100
+            allowEdit : true,
+            targetWidth: 640,
+            targetHeight: 640,
+            correctOrientation: 1,
+            saveToPhotoAlbum: false,
             destinationType: navigator.camera.DestinationType.FILE_URI,
               // DATA_URL : 0,      // Return image as base64-encoded string
               // FILE_URI : 1,      // Return image file URI as stored in memory
               // NATIVE_URI : 2     // Return image native URI (e.g., assets-library:// on iOS 
-            sourceType : navigator.camera.PictureSourceType.CAMERA,
-            allowEdit : false
+            sourceType : navigator.camera.PictureSourceType.CAMERA
           };
         }
         
@@ -352,34 +353,30 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 
   apiCall.uploadPhoto = function(imageURI) {
+    console.log('imageURI = ', imageURI);
     var win = function(UploadResult) {
       console.log('Success ########### ', JSON.stringify(UploadResult));
     };
-    var fail = function(error) {
-      console.log('ERROR ############ ', JSON.stringify(error));
-    };
-    console.log('imageURI = ', imageURI);
+    var fail = function(error) {};
+
     var options = new FileUploadOptions;
     options.fileKey = 'photo';
     options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1);
     console.log('filename ', options.fileName);
     options.mimeType = 'image/jpeg';
     options.params = {
-      owner: '53c407465386dbf21f97824d',
-      threadId: '553c846a886b861bc3df890e7'
+      'owner': '53c846883e7492893d1eaa11',
+      'threadId': '53c846a886b861bc3df890e7'
     };
     options.chunkedMode = true;
-    options.headers = {
-      'Content-Type': 'multipart/formdata'
-      // 'Connection': 'close'
-    };
+    // options.headers = {
+    //   'Content-Type': 'multipart/form-data',
+    //   'Connection': 'close'
+    // };
+
+    var endpoint = encodeURI('http://d455d3e.ngrok.com/api/photos');    // ('http://tradingfaces.herokuapp.com/api/photos/');
 
     var ft = new FileTransfer();
-    console.log(JSON.stringify(ft));
-    console.log(JSON.stringify(ft.prototype)); // shows nothing
-    console.log('created ft OK');
-    var endpoint = encodeURI('http://tradingfaces.herokuapp.com/api/photos/'); // 'http://tradingfaces.apiary-mock.com/photos/'
-    console.log('encoded = ', endpoint);
     ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
   };
 
