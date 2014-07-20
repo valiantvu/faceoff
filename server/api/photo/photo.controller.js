@@ -37,8 +37,8 @@ exports.create = function (req, res, next) {
   var fstream;
   var photoData = {};
 
-  //if (req.headers['content-type'] === 'multipart/form-data'){
-  if (req.headers['content-type'].indexOf('multipart/form-data') !== -1){
+
+    console.log('in form data');
     var busboy = new Busboy({ headers: req.headers });
     //initiate form processing
     req.pipe(busboy);
@@ -109,20 +109,6 @@ exports.create = function (req, res, next) {
           res.send('we need a valid userId for the owner and photo data');
         }
       });
-  }
-  else {
-    var newPhoto = new Photo({url: req.body.url, owner: req.body.owner});
-    newPhoto.save(function(err, photo) {
-      Thread.findById(req.body.threadId, function(err, thread) {
-        if (err) return validationError(res, err);
-        thread.photos.push(photo.id);
-        thread.save(function(err, updatedThread) {
-          if (err) return validationError(res, err);
-          res.json({ data: photo });
-        });
-      });
-  });
-  }
 };
 
 /**
@@ -163,7 +149,7 @@ var uploadToCloud = function (photo, photoName, photoId) {
             return perr;
         } else {
           console.log('resp from amazon', pres);
-            console.log("Successfully uploaded " +photoName +" to myBucket/myKey");
+            console.log("Successfully uploaded " +photoName +" to s3 bucket");
             photo.cloudStatus = 'confirmed';
             photo.save(function(err, photo) {
               if (err) return validationError(res, err);
