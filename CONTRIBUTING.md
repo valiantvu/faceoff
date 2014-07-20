@@ -28,6 +28,14 @@ cd faceoff
 git remote add upstream https://github.com/Face-Off/faceoff.git
 ```
 
+### Deploying the Server on Heroku
+If you are a project admin, follow these steps to deploy the server on heroku.
+
+1. Install the heroku CLI if you do not have it installed and log-in to your account. Here's a guide: https://devcenter.heroku.com/articles/heroku-command
+2. Add heroku as a remote repo:<br>
+```git remote add heroku git@heroku.com:tradingfaces.git```
+3. Push to the heroku remote repo once all testing has been completed and app is production ready:<br>
+```git push heroku master```
 
 
 
