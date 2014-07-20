@@ -4,14 +4,9 @@
 
 1. Fork the repo
 1. Clone down to local
-2. Create an upstream remote to faceoff master. Pull from this often.
-1. Make commits to your local master branch. Prefix each commit like so:
-  - (feat) Added a new feature
-  - (fix) Fixed inconsistent tests [Fixes #0]
-  - (refactor) ...
-  - (cleanup) ...
-  - (test) ...
-  - (doc) ...
+2. Create an upstream remote to faceoff master and pull from this often:<br>
+```git remote add upstream https://github.com/Face-Off/faceoff.git```
+1. Make commits to your local master branch
 1. Pull from upstream master and resolve conflicts before pushing to your fork origin on github
 1. Push to your fork master
 1. Create Pull request to Faceoff master
@@ -22,10 +17,15 @@
 
 ### Fork the repo
 
-Use github’s interface to make a fork of the repo, then add that repo as an upstream remote:
-
+Use github’s interface to make a fork of the project repo. Clone your forked repo to your local computer:
 ```
-git remote add upstream https://github.com/hackreactor-labs/<NAME_OF_REPO>.git
+git clone https://github.com/<USER_NAME>/faceoff.git
+```
+
+Once complete navigate into the cloned folder and add the project repo as an upstream remote:
+```
+cd faceoff
+git remote add upstream https://github.com/Face-Off/faceoff.git
 ```
 
 

@@ -129,16 +129,6 @@ When writing any block of code that is logically subordinate to the line immedia
     }
     ```
 
-* Don't use function statements for the entire first half of the course. They introduce a slew of subtle new rules to how the language behaves, and without a clear benefit. Once you and all your peers are expert level in the second half, you can start to use the more (needlessly) complicated option if you like.
-
-    ```javascript
-    // good:
-    var go = function(){...};
-
-    // bad:
-    function stop(){...};
-    ```
-
 
 ### Semicolons
 
@@ -217,25 +207,6 @@ When writing any block of code that is logically subordinate to the line immedia
     var secondItem = getSecond();
     ```
 
-* Put `else` and `else if` statements on the same line as the ending curly brace for the preceding `if` block
-    ```javascript
-    // good:
-    if(condition){
-      response();
-    }else{
-      otherResponse();
-    }
-
-    // bad:
-    if(condition){
-      response();
-    }
-    else{
-      otherResponse();
-    }
-    ```
-
-
 
 ### Working with files
 
@@ -299,10 +270,7 @@ When writing any block of code that is logically subordinate to the line immedia
 
 ### Capital letters in variable names
 
-* Some people choose to use capitalization of the first letter in their variable names to indicate that they contain a [class](http://en.wikipedia.org/wiki/Class_(computer_science\)). This capitalized variable might contain a function, a prototype, or some other construct that acts as a representative for the whole class.
-* Optionally, some people use a capital letter only on functions that are written to be run with the keyword `new`.
-* Do not use all-caps for any variables. Some people use this pattern to indicate an intended "constant" variable, but the language does not offer true constants, only mutable variables.
-
+* Variables should be named using camel case. The only exception is for database schema which should use underscore naming.
 
 ### Minutia
 
