@@ -201,6 +201,9 @@ exports.findThread = function (req, res, next) {
   });
 };
 
+/**
+ * Flips the read flag for the creator on the thread.
+ */
 exports.creatorMarkRead = function (req, res, next) {
   var threadId = req.params.id;
   var read = req.params.read;
@@ -209,6 +212,9 @@ exports.creatorMarkRead = function (req, res, next) {
   });
 };
 
+/**
+ * Flips the read flag for the creator on the thread.
+ */
 exports.recipientMarkRead = function (req, res, next) {
   var threadId = req.params.id;
   var read = req.params.read;
@@ -219,7 +225,6 @@ exports.recipientMarkRead = function (req, res, next) {
 
 /**
  * Deletes a thread
- * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
   Thread.findByIdAndRemove(req.params.id, function(err, thread) {
@@ -228,45 +233,5 @@ exports.destroy = function(req, res) {
   });
 };
 
-/**
- * Change a threads password
- */
-exports.changePassword = function(req, res, next) {
-  var threadId = req.thread._id;
-  var oldPass = String(req.body.oldPassword);
-  var newPass = String(req.body.newPassword);
 
-  Thread.findById(threadId, function (err, thread) {
-    if(thread.authenticate(oldPass)) {
-      thread.password = newPass;
-      thread.save(function(err) {
-        if (err) return validationError(res, err);
-        res.send(200);
-      });
-    } else {
-      res.send(403);
-    }
-  });
-};
-
-/**
- * Get my info
- */
-exports.me = function(req, res, next) {
-  var threadId = req.thread._id;
-  Thread.findOne({
-    _id: threadId
-  }, '-salt -hashedPassword', function(err, thread) { // don't ever give out the password or salt
-    if (err) return next(err);
-    if (!thread) return res.json(401);
-    res.json(thread);
-  });
-};
-
-/**
- * Authentication callback
- */
-exports.authCallback = function(req, res, next) {
-  res.redirect('/');
-};
 
