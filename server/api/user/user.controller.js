@@ -11,7 +11,6 @@ var validationError = function(res, err) {
 
 /**
  * Get list of users
- * restriction: 'admin'
  */
 exports.index = function(req, res) {
   User.find({}, function (err, users) {
@@ -25,11 +24,8 @@ exports.index = function(req, res) {
  */
 exports.create = function (req, res, next) {
   var newUser = new User(req.body);
-  // newUser.provider = 'local';
   newUser.save(function(err, user) {
     if (err) return validationError(res, err);
-    // var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
-    // res.json({ token: token });
     res.json({ data: user });
   });
 };
@@ -82,7 +78,6 @@ exports.showAllThreadsData = function (req, res, next) {
 
 /**
  * Deletes a user
- * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
   User.findByIdAndRemove(req.params.id, function(err, user) {

@@ -20,8 +20,7 @@ var validationError = function(res, err) {
 };
 
 /**
- * Get list of threads
- * restriction: 'admin'
+ * Get list of all threads
  */
 exports.index = function(req, res) {
   Thread.find({}, function (err, threads) {
@@ -30,9 +29,12 @@ exports.index = function(req, res) {
   });
 };
 
+/**
+ * Send an SMS text to the specified phone number.
+ */
 var sendSms = function(name, phoneNumber){
   client.messages.create({
-    body: name + " says: let's trade faces! http://tradingspaces.herokuapp.com",
+    body: name + " says: let's trade faces! http://tradingfaces.herokuapp.com",
     to: "+1" + phoneNumber,
     from: "+16467592566"
   }, function(err, responseData){
@@ -50,38 +52,30 @@ var sendSms = function(name, phoneNumber){
  * Replaces a user's phone number with his/her ObjectId if user is registered,
  * otherwise it creates a user object and replaces the user's phone number with
  * the newly created ObjectId
+ *
+ * Input: an array of participants phone numbers
+ * Output: an array of participants user ids
  */
-// need access to sendSmsTo in create. possible better way?
 var sendSmsTo = [];
 var preCreate = function(participants){
-  //Input: an array of participants phone numbers
-  //Output: an array of participants user ids
-  //BEGIN
-    // set promiseArray to []
-    // loop participants in array
-      // create an empty promise
-      // lookup phone number
-      // if user exists then
-        // resolve promise with user id
-      // else 
-        // create new user object
-        // save new user object
-        // resolve promise with new user id
-      // add promise to promiseArray
-    // return promise array
-  //END
+  // set promiseArray to []
   var promiseArray = [];
   var fromPhoneNumber = participants[0];
+  // loop participants in array
   participants.forEach(function(participant){
+    // create an empty promise
     var deferred = Q.defer();
+    // lookup phone number
     User.findOne({"phone": participant}, function(err, user){
       //bubble up errors
       if (err) {
         deferred.reject(err);
       }
+      // if user exists resolve promise with user id
       if (user) {
         deferred.resolve(user);
       }
+      // else create new user object
       else {
         var newUser = new User({
           "first": "Pending",
@@ -89,17 +83,21 @@ var preCreate = function(participants){
           "phone": participant,
           "status": "pending"
         });
+        // save new user object
         newUser.save(function(err, user){
           // bubble up errors
           if(err) deferred.reject(err);
           // send text to new user with twilio
           sendSmsTo.push(participant);
+          // resolve promise with new user id
           deferred.resolve(user);
         });
       }
     })
+    // add promise to promiseArray
     promiseArray.push(deferred.promise);
   })
+  // return promise array
   return promiseArray;
 };
 
@@ -110,7 +108,6 @@ var preCreate = function(participants){
  * req.body.url -> Photo url -> ex: String
  * req.body.owner -> Photo owner id -> ex: String
  */
-///{particpants:{id: 53c3fc714dbca9cb1589e695, id:53c3fc714dbca9cb1589e696}, owner:53c3fc714dbca9cb1589e696, url: http://goo.gl/oUgHgn}
 exports.create = function (req, res, next) {
   var creatorOfThread = req.body.participants[0];
   var promises = preCreate(req.body.participants);
@@ -175,7 +172,7 @@ exports.show = function (req, res, next) {
 };
 
 /**
- * Get a single thread and populate all participant and photo data.
+ * Get a single thread and populate all participant and photo fields with JSON data.
  */
 exports.showAllData = function (req, res, next) {
   var options = [{
@@ -190,10 +187,9 @@ exports.showAllData = function (req, res, next) {
 };
 
 /**
- * Get a thread based on request object search data.
+ * Search for a thread based on request containing array of participant IDs.
  */
 exports.findThread = function (req, res, next) {
-  console.log(req.body.participants);
   Thread.findOne({participants: {$all: req.body.participants}}).exec(function (err, threadData) {
     if (err) return err;
     if (!threadData) return res.send(null);
@@ -213,7 +209,7 @@ exports.creatorMarkRead = function (req, res, next) {
 };
 
 /**
- * Flips the read flag for the creator on the thread.
+ * Flips the read flag for the recipient on the thread.
  */
 exports.recipientMarkRead = function (req, res, next) {
   var threadId = req.params.id;
