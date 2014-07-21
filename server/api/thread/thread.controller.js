@@ -32,7 +32,7 @@ exports.index = function(req, res) {
 
 var sendSms = function(name, phoneNumber){
   client.messages.create({
-    body: name + " says: let's trade faces! http://tradingspaces.herokuapp.com",
+    body: name + " says: let's trade faces! http://tradingfaces.herokuapp.com",
     to: "+1" + phoneNumber,
     from: "+16467592566"
   }, function(err, responseData){
