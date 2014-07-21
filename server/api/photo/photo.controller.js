@@ -20,8 +20,7 @@ var validationError = function(res, err) {
 };
 
 /**
- * Get list of photos
- * restriction: 'admin'
+ * Get list of all photos
  */
 exports.index = function(req, res) {
   Photo.find({}, function (err, photos) {
@@ -62,73 +61,73 @@ exports.create = function (req, res, next) {
     var busboy = new Busboy({ headers: req.headers });
     //initiate form processing
     req.pipe(busboy);
-      //busboy parses out the multipart/form data
-      busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-        //save file
-        fstream = fs.createWriteStream('./tempImages/' + filename);
-        file.pipe(fstream);
-        fstream.on('close', function () {    
-              console.log("Saving Finished of " + filename);              
-        });
-        file.on('data', function(data) {
-          console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
-        });
-        file.on('end', function(data) {
-          //add data to the storage object above
-          photoData[fieldname]=filename;
-          console.log('File [' + fieldname + '] Finished');
-        });
+    //busboy parses out the multipart/form data
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+      console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+      //save file
+      fstream = fs.createWriteStream('./tempImages/' + filename);
+      file.pipe(fstream);
+      fstream.on('close', function () {    
+        console.log("Saving Finished of " + filename);              
       });
-      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
-        //add owner userId to the storage object above
-        photoData[fieldname]=val;
-        console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+      file.on('data', function(data) {
+        console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
       });
-      busboy.on('finish', function() {
-        console.log('Done parsing form!');
-        console.log('photo data', photoData);
+      file.on('end', function(data) {
+        //add data to the storage object above
+        photoData[fieldname]=filename;
+        console.log('File [' + fieldname + '] Finished');
+      });
+    });
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+      //add owner userId to the storage object above
+      photoData[fieldname]=val;
+      console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+    });
+    busboy.on('finish', function() {
+      console.log('Done parsing form!');
+      console.log('photo data', photoData);
 
-        //check to see we have the required photo model data from the post
-        if (photoData.owner && photoData.photo && photoData.threadId){
+      //check to see we have the required photo model data from the post
+      if (photoData.owner && photoData.photo && photoData.threadId){
 
-          var newPhoto = new Photo(photoData);
-          //create the new photo object
-          newPhoto.save(function(err, photo) {
-            if (err) res.send(validationError(res, err));
-            //hard code for now
-            photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
-            photo.cloudStatus = 'in process';
-            photo.name= photo.id;
-            //set the photo name to the photo object id
-            photo.save(function(err, photo) {
-              if (err) return validationError(res, err);
-              uploadToCloud(photo, photoData.photo, photo.id);
-              res.json({ data: photo });
-            });
-            //add this photo to the thread
-            Thread.findById(photoData.threadId, function(err, thread) {
-              if (err) return validationError(res, err);
-              thread.photos.push(photo.id);
-              thread.save(function(err, updatedThread) {
-              if (err) return validationError(res, err);
-              console.log('photo added to thread', updatedThread.id);
-              });
-            });
-            //add this photo to user collection
-            User.findById(photoData.owner, function (err, user) {
-              if (err) return err;
-              user.photos.push(photo.id);
-              user.save(function(err, photo) {
-                if (err) return err;
-                console.log('Added photo '+ photo.id + ' to user '+ photoData.owner);
-              });
+        var newPhoto = new Photo(photoData);
+        //create the new photo object
+        newPhoto.save(function(err, photo) {
+          if (err) res.send(validationError(res, err));
+          //hard code for now
+          photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
+          photo.cloudStatus = 'in process';
+          photo.name= photo.id;
+          //set the photo name to the photo object id
+          photo.save(function(err, photo) {
+            if (err) return validationError(res, err);
+            uploadToCloud(photo, photoData.photo, photo.id);
+            res.json({ data: photo });
+          });
+          //add this photo to the thread
+          Thread.findById(photoData.threadId, function(err, thread) {
+            if (err) return validationError(res, err);
+            thread.photos.push(photo.id);
+            thread.save(function(err, updatedThread) {
+            if (err) return validationError(res, err);
+            console.log('photo added to thread', updatedThread.id);
             });
           });
-        } else {
-          res.send('we need a valid userId for the owner and photo data');
-        }
-      });
+          //add this photo to user collection
+          User.findById(photoData.owner, function (err, user) {
+            if (err) return err;
+            user.photos.push(photo.id);
+            user.save(function(err, photo) {
+              if (err) return err;
+              console.log('Added photo '+ photo.id + ' to user '+ photoData.owner);
+            });
+          });
+        });
+      } else {
+        res.send('we need a valid userId for the owner and photo data');
+      }
+    });
   }
 };
 
@@ -160,41 +159,37 @@ var uploadToCloud = function (photo, photoName, photoId) {
     var s3 = new AWS.S3();
     //Send photo to s3
     s3.putObject(params, function (perr, pres) {
-        if (perr) {
-            console.log("Error uploading data: ", perr);
-            photo.cloudStatus = 'error';
-            photo.save(function(err, photo) {
-              if (err) return validationError(res, err);
-              console.log('Cloud status ERROR for photo ', photo.id);
-            });
-            return perr;
-        } else {
-          console.log('resp from amazon', pres);
-            console.log("Successfully uploaded " +photoName +" to s3 bucket");
-            photo.cloudStatus = 'confirmed';
-            photo.save(function(err, photo) {
-              if (err) return validationError(res, err);
-              console.log('Cloud status updated for photo ', photo.id);
-            });
-            deleteTempFile(photoName);
-            return pres;
-        }
+      if (perr) {
+          console.log("Error uploading data: ", perr);
+          photo.cloudStatus = 'error';
+          photo.save(function(err, photo) {
+            if (err) return validationError(res, err);
+            console.log('Cloud status ERROR for photo ', photo.id);
+          });
+          return perr;
+      } else {
+        console.log('resp from amazon', pres);
+        console.log("Successfully uploaded " +photoName +" to s3 bucket");
+        photo.cloudStatus = 'confirmed';
+        photo.save(function(err, photo) {
+          if (err) return validationError(res, err);
+          console.log('Cloud status updated for photo ', photo.id);
+        });
+        deleteTempFile(photoName);
+        return pres;
+      }
     });
   });
-
 };
 
 /**
  * Delete TempFile
  */
-
 var deleteTempFile = function (photoName) {
-
   fs.unlink('./tempImages/'+ photoName, function (err) {
     if (err) throw err;
     console.log('successfully deleted ./tempImages/'+ photoName);
   });
-
 };
 
 

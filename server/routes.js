@@ -18,7 +18,6 @@ module.exports = function(app) {
   });
 
   // Insert routes below
-  app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));
   app.use('/api/threads', require('./api/thread'));
   app.use('/api/photos', require('./api/photo'));
