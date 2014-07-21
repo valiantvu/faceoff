@@ -50,7 +50,7 @@ exports.create = function (req, res, next) {
         thread.photos.push(photo.id);
         thread.save(function(err, updatedThread) {
           if (err) return validationError(res, err);
-          res.json({ data: photo });
+          res.json(photo);
         });
       });
     });
@@ -66,7 +66,8 @@ exports.create = function (req, res, next) {
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
       console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
       //save file
-      fstream = fs.createWriteStream('./tempImages/' + filename);
+      console.log('HEY ' + config.root +'/tmp/');
+      fstream = fs.createWriteStream(config.root + '/tmp/' + filename);
       file.pipe(fstream);
       fstream.on('close', function () {    
         console.log("Saving Finished of " + filename);              
@@ -76,6 +77,7 @@ exports.create = function (req, res, next) {
       });
       file.on('end', function(data) {
         //add data to the storage object above
+        console.log('DATA from end up file upload', data);
         photoData[fieldname]=filename;
         console.log('File [' + fieldname + '] Finished');
       });
@@ -97,14 +99,14 @@ exports.create = function (req, res, next) {
         newPhoto.save(function(err, photo) {
           if (err) res.send(validationError(res, err));
           //hard code for now
-          photo.url='s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
+          photo.url='http://s3-us-west-1.amazonaws.com/tradingfaces/'+photo.id+'.jpg';
           photo.cloudStatus = 'in process';
           photo.name= photo.id;
           //set the photo name to the photo object id
           photo.save(function(err, photo) {
             if (err) return validationError(res, err);
             uploadToCloud(photo, photoData.photo, photo.id);
-            res.json({ data: photo });
+            res.json(photo);
           });
           //add this photo to the thread
           Thread.findById(photoData.threadId, function(err, thread) {
@@ -149,7 +151,7 @@ var uploadToCloud = function (photo, photoName, photoId) {
   });
 
   //Grab the photo from temp storage in the server
-  fs.readFile('./tempImages/'+ photoName, function (err, data) {
+  fs.readFile(config.root + '/tmp/'+ photoName, function (err, data) {
 
     var params = {
         Bucket: 'tradingfaces',
@@ -174,6 +176,7 @@ var uploadToCloud = function (photo, photoName, photoId) {
         photo.cloudStatus = 'confirmed';
         photo.save(function(err, photo) {
           if (err) return validationError(res, err);
+          console.log('SAVED PHOTO DATA ', photo);
           console.log('Cloud status updated for photo ', photo.id);
         });
         deleteTempFile(photoName);
@@ -187,7 +190,7 @@ var uploadToCloud = function (photo, photoName, photoId) {
  * Delete TempFile
  */
 var deleteTempFile = function (photoName) {
-  fs.unlink('./tempImages/'+ photoName, function (err) {
+  fs.unlink(config.root +'/tmp/'+ photoName, function (err) {
     if (err) throw err;
     console.log('successfully deleted ./tempImages/'+ photoName);
   });

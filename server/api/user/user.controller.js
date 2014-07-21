@@ -26,7 +26,8 @@ exports.create = function (req, res, next) {
   var newUser = new User(req.body);
   newUser.save(function(err, user) {
     if (err) return validationError(res, err);
-    res.json({ data: user });
+    console.log('new user is ', user);
+    res.json(user);
   });
 };
 
