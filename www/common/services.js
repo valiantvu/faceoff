@@ -1,6 +1,6 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['$state', 'Device', function($state, Device) {
+.factory('AccountService', ['$state', 'Device', 'API', function($state, Device, API) {
   
   return {
     authAndRoute: function() {
@@ -10,12 +10,14 @@ angular.module('services', ['ngCordova', 'ionic'])
       if (user.status === 'fresh') {
         $state.go('signupphone');
       } else if (user.status === 'pending') {
-        // update from server now, THEN check again:
+        // update user from server, then check again
+        API.getUser(Device.user()._id).then(function(json) {
           if (user.status === 'confirmed') {
             $state.go('menu.status');
           } else {
             $state.go('confirmaccount');
           }
+        })
       } else if (user.status === 'confirmed') {
         $state.go('menu.status');
       }
@@ -254,14 +256,15 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 })
 
-.factory('API', function($http, formDataObject) {
+.factory('API', function($http, formDataObject, $state) {
   var apiCall = {};
 
-  var devAPIRoute = 'http://localhost:9000'
-  var prodAPIRoute = 'http://tradingfaces.herokuapp.com'
+  var devAPIRoute = 'http://localhost:9000';
+  var chrisAPIRoute = 'http://60ef5319.ngrok.com';
+  var prodAPIRoute = 'http://tradingfaces.herokuapp.com';
 
   // Set the API route to use. devAPIRoute for testing, prodAPIRoute for production.
-  var APIRoute = devAPIRoute
+  var APIRoute = prodAPIRoute;
 
   apiCall.newUser = function(userData) {
     return $http({
@@ -307,20 +310,30 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 
   // Does not work for multipart forms.
-  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
-    return $http({
-      url: APIRoute + '/api/photos',
-      method: 'POST',
-      data: {
-        threadId: threadId,
-        owner: ownerId,
-        url: photoURI
-      }
-      // headers: {
-      //   'Content-Type': 'multipart/form-data'
-      // },
-      // transformRequest: formDataObject
-    });
+  apiCall.newPhoto = function(threadId, ownerId, imageURI, cb) {
+    console.log("New Photo");
+    var win = cb;
+    // var win = function(json) {
+    //   console.log("Successer ", JSON.stringify(json));
+    // };
+    var fail = function(error) {};
+
+    var options = new FileUploadOptions;
+    options.fileKey = 'photo';
+    options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1);
+    console.log('filename ', options.fileName);
+    options.mimeType = 'image/jpeg';
+    options.params = {
+      'owner': ownerId,
+      'threadId': threadId
+    };
+    options.chunkedMode = true;
+
+    var endpoint = encodeURI(APIRoute + '/api/photos/');
+
+    var ft = new FileTransfer();
+    console.log("Bottom of newPhoto");
+    ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
   };
 
   apiCall.getThread = function(threadId) {
@@ -357,32 +370,6 @@ angular.module('services', ['ngCordova', 'ionic'])
       method: 'GET'
     });
   };
-
-  apiCall.uploadPhoto = function(imageURI) {
-    console.log('imageURI = ', imageURI);
-    var win = function(UploadResult) {
-      console.log('Photo Upload Success: ', JSON.stringify(UploadResult));
-    };
-    var fail = function(error) {};
-
-    var options = new FileUploadOptions;
-    options.fileKey = 'photo';
-    options.fileName = imageURI.substr(imageURI.lastIndexOf('/')+1);
-    console.log('filename ', options.fileName);
-    options.mimeType = 'image/jpeg';
-    options.params = {
-      'owner': '53c846883e7492893d1eaa11',
-      'threadId': '53c846a886b861bc3df890e7'
-    };
-    options.chunkedMode = true;
-
-    var endpoint = encodeURI('http://tradingfaces.herokuapp.com/api/photos/');
-
-    var ft = new FileTransfer();
-    ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
-  };
-
-
 
   /************************
    *** SAMPLE API Calls ***
