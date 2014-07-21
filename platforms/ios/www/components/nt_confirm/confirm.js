@@ -7,7 +7,7 @@ angular.module('faceoff.newthreadconfirm', [
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 })
 
-.controller('NTConfirmController', function($scope, $state, $rootScope, API) {
+.controller('NTConfirmController', function($scope, $state, $rootScope, API, Device) {
 
   $scope.selectedFriend = $rootScope.selectedFriend;
   $scope.capturedImageURI = $rootScope.capturedImageURI;
@@ -16,15 +16,15 @@ angular.module('faceoff.newthreadconfirm', [
 
   $scope.confirm = function() {
     if (registeredFriend) {
-      // Search for thread between users. 
+      // Search for thread between users.
       // If found add new photo to thread, else start new thread.
-      API.searchForThread($scope.user.id, $scope.selectedFriend._id)
+      API.searchForThread($scope.user._id, $scope.selectedFriend._id)
         .success(function(foundThread) {
           if (foundThread) {
-            createNewPhoto(foundThread._id, $scope.user.id, foundThread.creator);
+            createNewPhoto(foundThread._id, $scope.user._id, foundThread.creator);
           }
           else {
-            createNewThread();
+            createNewThread() ;
           }
         });
     }
@@ -34,6 +34,8 @@ angular.module('faceoff.newthreadconfirm', [
   };
 
   var createNewThread = function() {
+    console.log("User ", JSON.stringify($scope.user));
+    console.log("Friend ", JSON.stringify($scope.selectedFriend));
     API.newThread([$scope.user.phone, $scope.selectedFriend.phone])
       // After creating new thread, create a photo that will be added to thread.
       .success(function(newThread) {
@@ -48,22 +50,28 @@ angular.module('faceoff.newthreadconfirm', [
 
   // Creator parameter only used for existing threads. Used to determine unread status.
   var createNewPhoto = function(threadId, userId, creator) {
-    API.newPhoto(threadId, userId, $scope.capturedImageURI)
-      .success(function(data) {
-        // If creator is defined mark the thread unread for appropriate party.
-        if (creator) {
-          if (userId === creator) {
-            API.recipientRead(threadId, false);
-          }
-          else {
-            API.creatorRead(threadId, false);
-          }
-        }
-        $state.go('menu.status');
-      })
-      .error(function(error) {
-        console.log(error);
-      });
+    console.log("Creating Photo");
+    console.log("threadID ", threadId);
+    console.log("userID ", userId);
+    API.newPhoto(threadId, userId, $scope.capturedImageURI, function(json){
+      console.log("Successful Photo Upload ", JSON.stringify(json));
+      $state.go('menu.status');
+    });
+      // .success(function(data) {
+      //   // If creator is defined mark the thread unread for appropriate party.
+      //   if (creator) {
+      //     if (userId === creator) {
+      //       API.recipientRead(threadId, false);
+      //     }
+      //     else {
+      //       API.creatorRead(threadId, false);
+      //     }
+      //   }
+      //   $state.go('menu.status');
+      // })
+      // .error(function(error) {
+      //   console.log(error);
+      // });
   }
 
   var init = function() {

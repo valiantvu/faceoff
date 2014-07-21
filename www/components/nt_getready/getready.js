@@ -11,11 +11,6 @@ angular.module('faceoff.newthreadgetready', [
 
   $scope.shoot = function() {
     Camera.getPicture().then(function(imageURI) {
-      // testing upload
-      if (Device.isPhone()) {
-        API.uploadPhoto(imageURI);
-      }
-
       $rootScope.capturedImageURI = imageURI;
       $state.go('newthreadselectfriend');
     }).catch(function(err) { console.log(err); });

@@ -1,6 +1,6 @@
 angular.module('services', ['ngCordova', 'ionic'])
 
-.factory('AccountService', ['$state', 'Device', function($state, Device) {
+.factory('AccountService', ['$state', 'Device', 'API', function($state, Device, API) {
   
   return {
     authAndRoute: function() {
@@ -10,12 +10,14 @@ angular.module('services', ['ngCordova', 'ionic'])
       if (user.status === 'fresh') {
         $state.go('signupphone');
       } else if (user.status === 'pending') {
-        // update from server now, THEN check again:
+        // update user from server, then check again
+        API.getUser(Device.user()._id).then(function(json) {
           if (user.status === 'confirmed') {
             $state.go('menu.status');
           } else {
             $state.go('confirmaccount');
           }
+        })
       } else if (user.status === 'confirmed') {
         $state.go('menu.status');
       }
@@ -176,7 +178,7 @@ angular.module('services', ['ngCordova', 'ionic'])
           options = {
             cameraDirection: 1,
             quality: 90, // 1-100
-            allowEdit : true,
+            allowEdit : true, // necessary for Square aspect ratio
             targetWidth: 640,
             targetHeight: 640,
             correctOrientation: 1,
@@ -254,12 +256,19 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 })
 
-.factory('API', function($http, formDataObject) {
+.factory('API', function($http, formDataObject, $state) {
   var apiCall = {};
+
+  var devAPIRoute = 'http://localhost:9000';
+  var chrisAPIRoute = 'http://60ef5319.ngrok.com';
+  var prodAPIRoute = 'http://tradingfaces.herokuapp.com';
+
+  // Set the API route to use. devAPIRoute for testing, prodAPIRoute for production.
+  var APIRoute = prodAPIRoute;
 
   apiCall.newUser = function(userData) {
     return $http({
-      url: 'http://localhost:9000/api/users',
+      url: APIRoute + '/api/users',
       method: 'POST',
       data: userData
     });
@@ -267,14 +276,14 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.getUser = function(userId) {
     return $http({
-      url: 'http://localhost:9000/api/users/' + userId,
+      url: APIRoute + '/api/users/' + userId,
       method: 'GET'
     });
   };
 
   apiCall.searchForUser = function(user) {
     return $http({
-      url: 'http://localhost:9000/api/users/find',
+      url: APIRoute + '/api/users/find',
       method: 'POST',
       data: user
     });
@@ -282,7 +291,7 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.searchForThread = function(user1, user2) {
     return $http({
-      url: 'http://localhost:9000/api/threads/find-thread',
+      url: APIRoute + '/api/threads/find-thread',
       method: 'POST',
       data: {
         participants: [user1, user2]
@@ -292,7 +301,7 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.newThread = function(participants) {
     return $http({
-      url: 'http://localhost:9000/api/threads',
+      url: APIRoute + '/api/threads',
       method: 'POST',
       data: {
         participants: participants // participants should be an array of phone numbers: Ex [1002003000, 1112223333]
@@ -301,62 +310,12 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 
   // Does not work for multipart forms.
-  apiCall.newPhoto = function(threadId, ownerId, photoURI) {
-    return $http({
-      url: 'http://localhost:9000/api/photos',
-      method: 'POST',
-      data: {
-        threadId: threadId,
-        owner: ownerId,
-        url: photoURI
-      }
-      // headers: {
-      //   'Content-Type': 'multipart/form-data'
-      // },
-      // transformRequest: formDataObject
-    });
-  };
-
-  apiCall.getThread = function(threadId) {
-    return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId,
-      method: 'GET'
-    });
-  };
-
-  apiCall.getThreadData = function(threadId) {
-    return $http({
-      url: 'http://localhost:9000/api/threads/all/' + threadId,
-      method: 'GET'
-    });
-  };
-
-  apiCall.getAllThreadsData = function(threadId) {
-    return $http({
-      url: 'http://localhost:9000/api/users/threads/' + threadId,
-      method: 'GET'
-    });
-  };
-
-  apiCall.creatorRead = function(threadId, read) {
-    return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/read/' + read,
-      method: 'GET'
-    });
-  };
-
-  apiCall.recipientRead = function(threadId, read) {
-    return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/read/' + read,
-      method: 'GET'
-    });
-  };
-
-  apiCall.uploadPhoto = function(imageURI) {
-    console.log('imageURI = ', imageURI);
-    var win = function(UploadResult) {
-      console.log('Success ########### ', JSON.stringify(UploadResult));
-    };
+  apiCall.newPhoto = function(threadId, ownerId, imageURI, cb) {
+    console.log("New Photo");
+    var win = cb;
+    // var win = function(json) {
+    //   console.log("Successer ", JSON.stringify(json));
+    // };
     var fail = function(error) {};
 
     var options = new FileUploadOptions;
@@ -365,22 +324,52 @@ angular.module('services', ['ngCordova', 'ionic'])
     console.log('filename ', options.fileName);
     options.mimeType = 'image/jpeg';
     options.params = {
-      'owner': '53c846883e7492893d1eaa11',
-      'threadId': '53c846a886b861bc3df890e7'
+      'owner': ownerId,
+      'threadId': threadId
     };
     options.chunkedMode = true;
-    // options.headers = {
-    //   'Content-Type': 'multipart/form-data',
-    //   'Connection': 'close'
-    // };
 
-    var endpoint = encodeURI('http://d455d3e.ngrok.com/api/photos');    // ('http://tradingfaces.herokuapp.com/api/photos/');
+    var endpoint = encodeURI(APIRoute + '/api/photos/');
 
     var ft = new FileTransfer();
+    console.log("Bottom of newPhoto");
     ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
   };
 
+  apiCall.getThread = function(threadId) {
+    return $http({
+      url: APIRoute + '/api/threads/' + threadId,
+      method: 'GET'
+    });
+  };
 
+  apiCall.getThreadData = function(threadId) {
+    return $http({
+      url: APIRoute + '/api/threads/all/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.getAllThreadsData = function(threadId) {
+    return $http({
+      url: APIRoute + '/api/users/threads/' + threadId,
+      method: 'GET'
+    });
+  };
+
+  apiCall.creatorRead = function(threadId, read) {
+    return $http({
+      url: APIRoute + '/api/threads/' + threadId + '/creator/read/' + read,
+      method: 'GET'
+    });
+  };
+
+  apiCall.recipientRead = function(threadId, read) {
+    return $http({
+      url: APIRoute + '/api/threads/' + threadId + '/recipient/read/' + read,
+      method: 'GET'
+    });
+  };
 
   /************************
    *** SAMPLE API Calls ***

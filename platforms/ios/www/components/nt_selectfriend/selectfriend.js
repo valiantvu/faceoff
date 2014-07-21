@@ -10,6 +10,7 @@ angular.module('faceoff.newthreadselectfriend', [
 .controller('NTSelectFriendController', function($scope, $state, $rootScope, Device, Contacts) {
 
   $scope.capturedImageURI = $rootScope.capturedImageURI;
+  $scope.searchText;
   
   // grab contacts with phone numbers
   if (Device.isPhone()) {
