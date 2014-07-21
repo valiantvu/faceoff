@@ -3,15 +3,14 @@
 ## General Workflow
 
 1. Fork the repo
-1. Clone down to local
-2. Create an upstream remote to faceoff master and pull from this often:<br>
+2. Clone down to local
+3. Create an upstream remote to faceoff master and pull from this often:<br>
 ```git remote add upstream https://github.com/Face-Off/faceoff.git```
-1. Make commits to your local master branch
-1. Pull from upstream master and resolve conflicts before pushing to your fork origin on github
-1. Push to your fork master
-1. Create Pull request to Faceoff master
-1. Approve your own pull request
-2. Push to Heroku
+4. Make commits to your local master branch
+5. Pull from upstream master and resolve conflicts before pushing to your fork origin on github
+6. Push to your fork master
+7. Create Pull request to faceoff master
+8. Project admins will review pull requests and merge or leave comments for resubmitting.
 
 ## Details 
 
