@@ -35,6 +35,7 @@ exports.index = function(req, res) {
 exports.create = function (req, res, next) {
   var fstream;
   var photoData = {};
+  console.log('trying to create new portfolio');
 
   /*  
     Busboy only reads multipart form requests. This statement re-routes JSON requests
