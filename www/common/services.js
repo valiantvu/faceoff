@@ -257,9 +257,15 @@ angular.module('services', ['ngCordova', 'ionic'])
 .factory('API', function($http, formDataObject) {
   var apiCall = {};
 
+  var devAPIRoute = 'http://localhost:9000'
+  var prodAPIRoute = 'http://tradingfaces.herokuapp.com'
+
+  // Set the API route to use. devAPIRoute for testing, prodAPIRoute for production.
+  var APIRoute = devAPIRoute
+
   apiCall.newUser = function(userData) {
     return $http({
-      url: 'http://localhost:9000/api/users',
+      url: APIRoute + '/api/users',
       method: 'POST',
       data: userData
     });
@@ -267,14 +273,14 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.getUser = function(userId) {
     return $http({
-      url: 'http://localhost:9000/api/users/' + userId,
+      url: APIRoute + '/api/users/' + userId,
       method: 'GET'
     });
   };
 
   apiCall.searchForUser = function(user) {
     return $http({
-      url: 'http://localhost:9000/api/users/find',
+      url: APIRoute + '/api/users/find',
       method: 'POST',
       data: user
     });
@@ -282,7 +288,7 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.searchForThread = function(user1, user2) {
     return $http({
-      url: 'http://localhost:9000/api/threads/find-thread',
+      url: APIRoute + '/api/threads/find-thread',
       method: 'POST',
       data: {
         participants: [user1, user2]
@@ -292,7 +298,7 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.newThread = function(participants) {
     return $http({
-      url: 'http://localhost:9000/api/threads',
+      url: APIRoute + '/api/threads',
       method: 'POST',
       data: {
         participants: participants // participants should be an array of phone numbers: Ex [1002003000, 1112223333]
@@ -303,7 +309,7 @@ angular.module('services', ['ngCordova', 'ionic'])
   // Does not work for multipart forms.
   apiCall.newPhoto = function(threadId, ownerId, photoURI) {
     return $http({
-      url: 'http://localhost:9000/api/photos',
+      url: APIRoute + '/api/photos',
       method: 'POST',
       data: {
         threadId: threadId,
@@ -319,35 +325,35 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   apiCall.getThread = function(threadId) {
     return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId,
+      url: APIRoute + '/api/threads/' + threadId,
       method: 'GET'
     });
   };
 
   apiCall.getThreadData = function(threadId) {
     return $http({
-      url: 'http://localhost:9000/api/threads/all/' + threadId,
+      url: APIRoute + '/api/threads/all/' + threadId,
       method: 'GET'
     });
   };
 
   apiCall.getAllThreadsData = function(threadId) {
     return $http({
-      url: 'http://localhost:9000/api/users/threads/' + threadId,
+      url: APIRoute + '/api/users/threads/' + threadId,
       method: 'GET'
     });
   };
 
   apiCall.creatorRead = function(threadId, read) {
     return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/creator/read/' + read,
+      url: APIRoute + '/api/threads/' + threadId + '/creator/read/' + read,
       method: 'GET'
     });
   };
 
   apiCall.recipientRead = function(threadId, read) {
     return $http({
-      url: 'http://localhost:9000/api/threads/' + threadId + '/recipient/read/' + read,
+      url: APIRoute + '/api/threads/' + threadId + '/recipient/read/' + read,
       method: 'GET'
     });
   };
