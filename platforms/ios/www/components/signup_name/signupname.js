@@ -3,7 +3,7 @@ angular.module('faceoff.signupname', [
 	'services'
 	])
 
-.controller('SignUpNameController', function(Contacts, $scope, $state, $ionicPopup, Device) {
+.controller('SignUpNameController', function(Contacts, $scope, $state, $ionicPopup, Device, API) {
 
 	$scope.user = Device.user(); // has phone, status, uuid, first(blank), last(blank)
 
@@ -25,14 +25,17 @@ angular.module('faceoff.signupname', [
 			// update local user
 			Device.user($scope.user);
 
-			// post signup data to server
-				// success
-					// update device user (status is now pending)
-					// go to cameranew
-				// error
-					// show error in modal
-			
-			$state.go('newthreadgetready');
+			// create new user and update local user
+			API.newUser(Device.user()).then(function(response) {
+				console.log("THEN ", JSON.stringify(response));
+				var user = response.data; // response message wrapped in data
+				Device.user(user);
+				console.log("New User: ", JSON.stringify(Device.user()));
+				console.log("New User: ", JSON.stringify(user));
+				$state.go('newthreadgetready');
+			}).catch(function(err) {
+				console.log('ERROR ', JSON.stringify(err));
+			});
 		} else {
 			$scope.invalidName();
 		}
