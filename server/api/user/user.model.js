@@ -17,7 +17,8 @@ var UserSchema = new Schema({
   created_at : {type: Date, default: Date.now},
   updated_at : {type: Date},
   threads: [{type: Schema.Types.ObjectId, ref: 'Thread'}],
-  photos: [{type: Schema.Types.ObjectId, ref: 'Photo'}]
+  photos: [{type: Schema.Types.ObjectId, ref: 'Photo'}],
+  confirmCode: { type: Number }
 });
 
 
