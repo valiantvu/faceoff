@@ -4,9 +4,28 @@ var User = require('./user.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
+var sendSms = require('../thread/thread.controller').sendSms;
 
 var validationError = function(res, err) {
   return res.json(422, err);
+};
+
+exports.confirm = function (req, res) {
+  console.log(req.body);
+  var userId = req.body.id;
+  User.findById(userId, function (err, user) {
+    if (err) return next(err);
+    if (!user) return res.send(401);
+    if(user.confirmCode === req.body.code) {
+      user.status = 'confirmed';
+      user.save(function(err, user){
+        if(err) console.log(err);
+        res.json(200, user);
+      });
+    }else {
+      res.status(401).send("Wrong Code Dude!");
+    }
+  });
 };
 
 /**
@@ -19,14 +38,23 @@ exports.index = function(req, res) {
   });
 };
 
+exports.genConfirmCode = function () {
+  var code;
+  code = Math.floor(Math.random() * 9000) + 1000;
+  return code;
+};
 /**
  * Creates a new user
  */
 exports.create = function (req, res, next) {
   var newUser = new User(req.body);
+  var message;
+  newUser.confirmCode = exports.genConfirmCode();
   newUser.save(function(err, user) {
     if (err) return validationError(res, err);
     console.log('new user is ', user);
+    message = " please confirm your Trading Faces account. Your code is: " + newUser.confirmCode;
+    sendSms(newUser.first, user.phone, message);
     res.json(user);
   });
 };

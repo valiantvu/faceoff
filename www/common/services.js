@@ -59,6 +59,7 @@ angular.module('services', ['ngCordova', 'ionic'])
   var concisePhone = function(phone) {
     // +1 (970) 618-7050  becomes  9706187050
     // remove '+1' '(' ')' '-' '.' ' '  LAST CHARACTER IS NOT AN EMPTY SPACE
+    phone = phone.toString();
     phone = phone.replace(/[' ')(\- ]/g, '');
     phone = phone.replace(/\+1/g, '');
     // don't allow 1 at front of number
@@ -256,7 +257,7 @@ angular.module('services', ['ngCordova', 'ionic'])
   };
 })
 
-.factory('API', function($http, formDataObject, $state) {
+.factory('API', function($q, $http, formDataObject, $state) {
   var apiCall = {};
 
   var devAPIRoute = 'http://localhost:9000';
@@ -323,12 +324,26 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   // Does not work for multipart forms.
   apiCall.newPhoto = function(threadId, ownerId, imageURI, cb) {
+    // Uncomment and comment out below for testing in the browser
+    // return $http({
+    //   url: APIRoute + '/api/photos',
+    //   method: 'POST',
+    //   data: {
+    //     threadId: threadId,
+    //     owner: ownerId,
+    //     url: imageURI
+    //   }
+    // });
+    
+    var q = $q.defer();
     console.log("New Photo");
     var win = cb;
-    // var win = function(json) {
-    //   console.log("Successer ", JSON.stringify(json));
-    // };
-    var fail = function(error) {};
+    var win = function(data) {
+      q.resolve(data);
+    };
+    var fail = function(error) {
+      q.reject(error);
+    };
 
     var options = new FileUploadOptions;
     options.fileKey = 'photo';
@@ -346,6 +361,7 @@ angular.module('services', ['ngCordova', 'ionic'])
     var ft = new FileTransfer();
     console.log("Bottom of newPhoto");
     ft.upload(imageURI, endpoint, win, fail, options, true); // true = trustAllHosts
+    return q.promise
   };
 
   apiCall.getThread = function(threadId) {

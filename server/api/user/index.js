@@ -12,6 +12,7 @@ router.get('/:id', controller.show);
 router.get('/threads/:id', controller.showAllThreadsData);
 
 router.post('/find', controller.find);
+router.post('/confirm', controller.confirm);
 router.post('/', controller.create);
 
 router.delete('/:id', controller.destroy);
