@@ -32,7 +32,7 @@ angular.module('faceoff.signupname', [
 				Device.user(user);
 				console.log("New User: ", JSON.stringify(Device.user()));
 				console.log("New User: ", JSON.stringify(user));
-				$state.go('newthreadgetready');
+				$state.go('signupconfirm');
 			}).catch(function(err) {
 				console.log('ERROR ', JSON.stringify(err));
 			});
