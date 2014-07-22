@@ -32,9 +32,11 @@ exports.index = function(req, res) {
 /**
  * Send an SMS text to the specified phone number.
  */
-var sendSms = function(name, phoneNumber){
+exports.sendSms = function(name, phoneNumber, message){
+  var defaultMessage = " says: let's trade faces! http://tradingfaces.herokuapp.com";
+  message = message || defaultMessage;
   client.messages.create({
-    body: name + " says: let's trade faces! http://tradingfaces.herokuapp.com",
+    body: name + message,
     to: "+1" + phoneNumber,
     from: "+16467592566"
   }, function(err, responseData){
@@ -118,7 +120,7 @@ exports.create = function (req, res, next) {
       if(err) console.log(err);
       var firstName = user.first;
       sendSmsTo.forEach(function(phoneNumber){
-        sendSms(firstName, phoneNumber);
+        exports.sendSms(firstName, phoneNumber);
       });
     });
 
