@@ -262,10 +262,22 @@ angular.module('services', ['ngCordova', 'ionic'])
 
   var devAPIRoute = 'http://localhost:9000';
   var chrisAPIRoute = 'http://60ef5319.ngrok.com';
+  var shawnAPIRoute = 'https://nxiigmpoci.localtunnel.me';
   var prodAPIRoute = 'http://tradingfaces.herokuapp.com';
 
   // Set the API route to use. devAPIRoute for testing, prodAPIRoute for production.
   var APIRoute = prodAPIRoute;
+
+  apiCall.confirmUser = function(userId, code) {
+    return $http({
+      url: APIRoute + '/api/users/confirm',
+      method: 'POST',
+      data: {
+        id: userId,
+        code: code
+      }
+    });
+  };
 
   apiCall.newUser = function(userData) {
     return $http({
