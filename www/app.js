@@ -53,6 +53,29 @@ angular.module('app', [
       controller: 'ConfirmAccountController'
     })
 
+    //Sidebar Child Views
+    .state('menu', {
+      url: '/',
+      abstract: true,
+      templateUrl: 'components/menu/menu.html',
+      controller: 'MenuController'
+    })
+
+    .state('menu.status', {
+      url: 'status',
+      views: {
+        'menuContent': {
+          templateUrl: 'components/status/status.html',
+          controller: 'StatusController'
+        }
+      },
+      resolve: {
+        threads: function(ThreadsService) {
+          return ThreadsService.all();
+        }
+      }
+    })
+
     // new thread flow
     .state('newthreadgetready', {
       url: '/getready',
@@ -77,29 +100,6 @@ angular.module('app', [
       url: '/thread/:threadId',
       templateUrl: 'components/thread/thread.html',
       controller: 'ThreadController'
-    })
-
-    //Sidebar Child Views
-    .state('menu', {
-      url: '/',
-      abstract: true,
-      templateUrl: 'components/menu/menu.html',
-      controller: 'MenuController'
-    })
-
-    .state('menu.status', {
-      url: 'status',
-      views: {
-        'menuContent': {
-          templateUrl: 'components/status/status.html',
-          controller: 'StatusController'
-        }
-      },
-      resolve: {
-        threads: function(ThreadsService) {
-          return ThreadsService.all();
-        }
-      }
     })
 
   // Default route
@@ -131,7 +131,8 @@ angular.module('app', [
     }
     // otherwise if a user doesn't yet exist in the phone's local storage, we create one
     else if (window.localStorage.getItem('deviceUser') === null) {
-      var deviceUser = { first: '', last: '', status: 'fresh', uuid: Device.get('uuid') };
+      var deviceUser = { first: '', last: '', status: 'fresh', uuid: Device.getItem('uuid') };
+      console.log("Device User: ", JSON.stringify(deviceUser));
       window.localStorage.setItem('deviceUser', JSON.stringify(deviceUser));
       // Don't know why we need to do this here to work on phone
       // expect that accessing storage takes too long
