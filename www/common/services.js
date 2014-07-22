@@ -265,7 +265,7 @@ angular.module('services', ['ngCordova', 'ionic'])
   var prodAPIRoute = 'http://tradingfaces.herokuapp.com';
 
   // Set the API route to use. devAPIRoute for testing, prodAPIRoute for production.
-  var APIRoute = shawnAPIRoute;
+  var APIRoute = prodAPIRoute;
 
   apiCall.confirmUser = function(userId, code) {
     return $http({
