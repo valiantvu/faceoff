@@ -14,11 +14,10 @@
     <div ng-repeat="photo in photos" ng-class="{'offset' : $index > 0 && photos[$index - 1].owner !== photo.owner}">
       <div class="row">
         <div class="col-50" ng-class="{'col-offset-50': photo.owner === participants[0]._id}">
-          <img ng-src="{{photo.url}}" class="thread-photo" ng-click="openModal(photo.url)">
+          <img ng-src="{{photo.url}}" id="loaded-image" repeat-done="layoutDone()" class="thread-photo" ng-click="openModal(photo.url)">
         </div>
       </div>
     </div>
-
   </ion-content>
 </ion-view>
 
