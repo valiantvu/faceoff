@@ -54,7 +54,7 @@ angular.module('faceoff.newthreadconfirm', [
     console.log("threadID ", threadId);
     console.log("userID ", userId);
     API.newPhoto(threadId, userId, $scope.capturedImageURI)
-      .success(function(data) {
+      .then(function(data) {
         // If creator is defined mark the thread unread for appropriate party.
         if (creator) {
           if (userId === creator) {
@@ -66,7 +66,7 @@ angular.module('faceoff.newthreadconfirm', [
         }
         $state.go('menu.status');
       })
-      .error(function(error) {
+      .catch(function(error) {
         console.log(error);
       });
   }
