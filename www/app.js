@@ -24,6 +24,8 @@ angular.module('app', [
 
 .config(function($compileProvider, $stateProvider, $urlRouterProvider) {
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
+  // enables uri for locally stored photos to be used in ng-src
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|file|blob|cdvfile):|data:image\//);
 
   $stateProvider
 
