@@ -8,6 +8,15 @@ angular.module('faceoff.thread', [
     API.getThreadData($stateParams.threadId)
       .success(function(data) {
         $scope.participants = data.participants;
+
+        for (var i = 0; i < data.photos.length; i++) {
+          var url = data.photos[i].url;
+          var storedImage = window.localStorage.getItem(url);
+
+          if (storedImage) {
+            data.photos[i].url = storedImage;
+          }
+        }
         $scope.photos = data.photos;
       })
       .error(function(error) {
@@ -21,32 +30,41 @@ angular.module('faceoff.thread', [
   };
 
   $scope.layoutDone = function() {
+    /* Store photos in localStorage 
+     * upon initial load of thread
+    */
     var photos = document.querySelectorAll('#loaded-image');
     for (var i = 0; i < photos.length; i++) {
-      photos[i].addEventListener('load', function(e) {
-        var image = e.target;
-        var src = image.getAttribute('src');
-        var imgCanvas = document.createElement("canvas"),
-        imgContext = imgCanvas.getContext("2d");
+      var url = photos[i].getAttribute('ng-src');
+      var storage = window.localStorage.getItem(url);
 
-        // Make sure canvas is as big as the picture
-        imgCanvas.width = image.width;
-        imgCanvas.height = image.height;
-     
-        // Draw image into canvas element
-        imgContext.drawImage(image, 0, 0, image.width, image.height);
-     
-        // Get canvas contents as a data URL
-        var imgAsDataURL = imgCanvas.toDataURL("image/jpeg");
-     
-        // Save image into localStorage
-        try {
-            localStorage.setItem(src, imgAsDataURL);
-        }
-        catch (e) {
-            console.log("Storage failed: " + e);
-        }
-      }, false);
+      if (!storage) {
+
+        photos[i].addEventListener('load', function(e) {
+          var image = e.target;
+          var src = image.getAttribute('src');
+          var imgCanvas = document.createElement("canvas"),
+          imgContext = imgCanvas.getContext("2d");
+
+          // Make sure canvas is as big as the picture
+          imgCanvas.width = image.width;
+          imgCanvas.height = image.height;
+       
+          // Draw image into canvas element
+          imgContext.drawImage(image, 0, 0, image.width, image.height);
+       
+          // Get canvas contents as a data URL
+          var imgAsDataURL = imgCanvas.toDataURL("image/jpeg");
+       
+          // Save image into localStorage
+          try {
+              localStorage.setItem(src, imgAsDataURL);
+          }
+          catch (e) {
+              console.log("Storage failed: " + e);
+          }
+        }, false);
+      }
     }
   };
 
@@ -71,6 +89,7 @@ angular.module('faceoff.thread', [
 
 .directive('repeatDone', function() {
   return function(scope, element, attrs) {
+
     if (scope.$last) { // all are rendered
       scope.$eval(attrs.repeatDone);
     }
